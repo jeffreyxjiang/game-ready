@@ -1,0 +1,130 @@
+import os
+import sys
+import json
+import openai
+from main2 import predict_injury
+
+# Set your OpenAI API key
+openai.api_key = "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"
+
+class AthleteAdvisorBot:
+    def __init__(self):
+        self.athlete_data = None
+        self.injury_predictions = None
+        self.conversation_history = []
+        
+    def load_athlete_data(self, athlete_data):
+        """Load athlete data and generate injury predictions"""
+        self.athlete_data = athlete_data
+        self.injury_predictions = predict_injury(athlete_data)
+        
+        # Sort predictions by probability
+        self.sorted_predictions = sorted(
+            self.injury_predictions.items(), 
+            key=lambda x: x[1], 
+            reverse=True
+        )
+        
+        # Store top 3 injury risks
+        self.top_risks = self.sorted_predictions[:3]
+        
+        # Initialize conversation with system message
+        self.conversation_history = [
+            {"role": "system", "content": self._create_system_prompt()}
+        ]
+    
+    def _create_system_prompt(self):
+        """Create a detailed system prompt with athlete data and injury predictions"""
+        sport = self.athlete_data.get("sport", "Unknown")
+        height = self.athlete_data.get("height_cm", "Unknown")
+        weight = self.athlete_data.get("weight_kg", "Unknown")
+        genetic_proneness = self.athlete_data.get("genetic_injury_proneness", "Unknown")
+        
+        # Format top injury risks
+        risk_info = "\n".join([f"- {injury}: {prob:.1%} probability" for injury, prob in self.top_risks])
+        
+        # Create detailed system prompt
+        system_prompt = f"""You are an expert sports medicine advisor and personal trainer specializing in injury prevention.
+You're advising an athlete with the following profile:
+
+Sport: {sport}
+Height: {height} cm
+Weight: {weight} kg
+Genetic Injury Proneness (1-10 scale): {genetic_proneness}
+Training Load (0-10 scale): {self.athlete_data.get('training_load', 'Unknown')}
+Recent Sleep: {self.athlete_data.get('sleep_hours', 'Unknown')} hours
+Recent RPE (Rate of Perceived Exertion): {self.athlete_data.get('RPE', 'Unknown')}
+
+Based on our predictive model, this athlete has the following injury risks:
+{risk_info}
+
+Your job is to provide personalized advice to help this athlete prevent injuries and optimize performance.
+Focus on practical, actionable recommendations related to:
+1. Sport-specific exercises and stretches
+2. Recovery techniques
+3. Nutrition and hydration strategies
+4. Training modifications
+5. Equipment recommendations
+
+Tailor your advice specifically to the athlete's top injury risks. Be conversational but concise.
+Always prioritize injury prevention while maintaining performance.
+"""
+        return system_prompt
+    
+    def get_response(self, user_message):
+        """Get a response from the chatbot based on the user's message"""
+        # Add user message to conversation history
+        self.conversation_history.append({"role": "user", "content": user_message})
+        
+        # Get response from OpenAI
+        response = openai.ChatCompletion.create(
+            model="gpt-4",  # or "gpt-3.5-turbo" depending on your preference
+            messages=self.conversation_history,
+            max_tokens=500,
+            temperature=0.7
+        )
+        
+        # Extract the response text
+        response_text = response.choices[0].message.content
+        
+        # Add assistant response to conversation history
+        self.conversation_history.append({"role": "assistant", "content": response_text})
+        
+        return response_text
+
+def main():
+    # Example athlete data (same as in main2.py)
+    athlete_data = {
+        "sport": "Volleyball",
+        "height_cm": 190,
+        "weight_kg": 82,
+        "genetic_injury_proneness": 6.5,
+        "daily_calories": 2800,
+        "protein_g": 180,
+        "carbs_g": 350,
+        "fat_g": 80,
+        "sleep_hours": 6.5,
+        "daily_steps": 15000,
+        "training_load": 8.5,
+        "RPE": 9
+    }
+    
+    # Initialize the chatbot
+    bot = AthleteAdvisorBot()
+    bot.load_athlete_data(athlete_data)
+    
+    print("🏥 Athlete Injury Prevention Advisor 🏥")
+    print("Ask me about exercises, stretches, or recommendations based on your injury risk profile.")
+    print("Type 'exit' to quit.\n")
+    
+    while True:
+        user_input = input("You: ")
+        if user_input.lower() in ["exit", "quit", "bye"]:
+            print("Advisor: Take care and stay injury-free!")
+            break
+        
+        response = bot.get_response(user_input)
+        print(f"Advisor: {response}\n")
+
+if __name__ == "__main__":
+    main()
