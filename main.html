@@ -1,0 +1,3107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recovery Assistant</title>
+    <!-- Include Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --secondary: #3f37c9;
+            --accent: #f72585;
+            --success: #4cc9b0;
+            --warning: #f9c74f;
+            --danger: #ef476f;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-400: #ced4da;
+            --gray-500: #adb5bd;
+            --gray-600: #6c757d;
+            --gray-700: #495057;
+            --gray-800: #343a40;
+            --gray-900: #212529;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f7fb;
+            margin: 0;
+            padding: 0;
+            color: var(--gray-800);
+        }
+
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .app-header {
+            padding: 20px 0;
+            border-bottom: 1px solid var(--gray-200);
+            margin-bottom: 24px;
+        }
+
+        .app-logo {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .app-logo i {
+            color: var(--accent);
+        }
+
+        .nav-tabs {
+            border-bottom: none;
+            margin-bottom: 0;
+            gap: 8px;
+        }
+
+        .nav-tabs .nav-item {
+            margin-bottom: 0;
+        }
+
+        .nav-tabs .nav-link {
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            color: var(--gray-600);
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-tabs .nav-link:hover {
+            background-color: var(--gray-100);
+            color: var(--primary);
+        }
+
+        .nav-tabs .nav-link.active {
+            background-color: var(--primary-light);
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.2);
+        }
+
+        .tab-content {
+            background-color: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+
+        .card:hover {
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .card-title {
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+
+        .card-body {
+            padding: 24px;
+        }
+
+        .btn {
+            border-radius: 8px;
+            padding: 10px 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary);
+            border-color: var(--secondary);
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            border-color: var(--success);
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            border-color: var(--danger);
+        }
+
+        .btn-outline-primary {
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .btn-outline-primary:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-outline-danger {
+            color: var(--danger);
+            border-color: var(--danger);
+        }
+
+        .btn-outline-danger:hover {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        /* Form styling */
+        .form-control, .form-select {
+            border-radius: 8px;
+            padding: 12px;
+            border: 1px solid var(--gray-300);
+        }
+
+        .form-control:focus, .form-select:focus {
+            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+            border-color: var(--primary-light);
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: var(--gray-700);
+            margin-bottom: 8px;
+        }
+
+        /* Body part styling */
+        .body-part {
+            cursor: pointer;
+            transition: stroke-width 0.3s, fill 0.3s;
+        }
+
+        .body-part:hover {
+            stroke-width: 3;
+            stroke: var(--primary);
+        }
+
+        .body-part-tooltip {
+            position: absolute;
+            background-color: white;
+            border-radius: 8px;
+            padding: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: none;
+            z-index: 1000;
+            font-size: 14px;
+        }
+
+        /* Health percent colors - refreshed */
+        .health-percent-100, .health-percent-90 { fill: #4cc9b0; }
+        .health-percent-80, .health-percent-70 { fill: #90be6d; }
+        .health-percent-60, .health-percent-50 { fill: #f9c74f; }
+        .health-percent-40, .health-percent-30 { fill: #f8961e; }
+        .health-percent-20, .health-percent-10, .health-percent-0 { fill: #ef476f; }
+
+        /* Risk level indicators */
+        .risk-low { background-color: var(--success); }
+        .risk-medium { background-color: var(--warning); }
+        .risk-high { background-color: var(--danger); }
+
+        /* Chat styling */
+        .chat-container {
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            margin-bottom: 16px;
+            padding: 16px;
+            background-color: var(--gray-100);
+        }
+
+        .chat-message {
+            margin-bottom: 12px;
+            padding: 12px 16px;
+            border-radius: 18px;
+            max-width: 80%;
+            word-wrap: break-word;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .user-message {
+            background-color: var(--primary-light);
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+        }
+
+        .bot-message {
+            background-color: white;
+            margin-right: auto;
+            border-bottom-left-radius: 4px;
+            border-left: 3px solid var(--primary);
+        }
+
+        /* History entry styling */
+        .history-entry {
+            border-left: 4px solid var(--primary);
+            padding: 16px;
+            margin-bottom: 16px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .history-entry:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* Profile section styling */
+        .profile-header {
+            background: linear-gradient(to right, var(--primary-light), var(--primary));
+            color: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 24px;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-stats {
+            background-color: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .profile-stat-item {
+            text-align: center;
+            padding: 10px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            color: var(--gray-600);
+            font-size: 14px;
+        }
+
+        .integration-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            border: 1px solid var(--gray-200);
+            background-color: white;
+        }
+
+        .integration-logo {
+            width: 32px;
+            height: 32px;
+            margin-right: 15px;
+        }
+
+        .connected-status {
+            display: inline-flex;
+            align-items: center;
+            font-size: 14px;
+            color: var(--success);
+        }
+
+        .connected-status i {
+            font-size: 18px;
+            margin-right: 5px;
+        }
+
+        .not-connected-status {
+            color: var(--gray-500);
+        }
+
+        /* Section titles */
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--gray-200);
+            color: var(--gray-800);
+        }
+
+        /* Activity suggestion pills */
+        .activity-pill {
+            display: inline-block;
+            padding: 6px 12px;
+            margin: 0 6px 6px 0;
+            background-color: #f8f9fa;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border: 1px solid #dee2e6;
+            transition: all 0.2s;
+        }
+        
+        .activity-pill:hover {
+            background-color: #e9ecef;
+            border-color: #ced4da;
+        }
+        
+        .risk-low {
+            background-color: #28a745;
+        }
+        
+        .risk-medium {
+            background-color: #ffc107;
+        }
+        
+        .risk-high {
+            background-color: #dc3545;
+        }
+        
+        /* New styles for updated simulation UI */
+        .activity-quick-select {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .activity-quick-select:hover {
+            background-color: #e9ecef !important;
+            color: #0d6efd !important;
+        }
+        
+        .pointer-cursor {
+            cursor: pointer;
+        }
+        
+        #simulation-tabs .nav-link {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
+        }
+        
+        /* Make radio buttons as pills more attractive */
+        .btn-check + .btn-outline-secondary {
+            border-color: #ced4da;
+            color: #6c757d;
+        }
+        
+        .btn-check:checked + .btn-outline-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        /* Toggle switch for settings */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        /* Settings list */
+        .settings-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .settings-list li {
+            padding: 15px 0;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .settings-list li:last-child {
+            border-bottom: none;
+        }
+
+        /* Progress bars */
+        .progress {
+            height: 10px;
+            border-radius: 5px;
+        }
+
+        /* Whoop connect button */
+        .whoop-connect-btn {
+            background-color: #000;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .whoop-connect-btn:hover {
+            background-color: #222;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Badges and tags */
+        .badge {
+            font-weight: 500;
+            padding: 6px 12px;
+            border-radius: 6px;
+        }
+
+        /* Health indicator squares */
+        .health-indicator {
+            width: 20px;
+            height: 20px;
+            border: 1px solid rgba(0, 0, 0, 0.2); 
+            display: inline-block;
+            border-radius: 4px;
+        }
+
+        .health-indicator.health-percent-100 { background-color: #4cc9b0; }
+        .health-indicator.health-percent-70 { background-color: #90be6d; }
+        .health-indicator.health-percent-40 { background-color: #f8961e; }
+        .health-indicator.health-percent-10 { background-color: #ef476f; }
+
+        /* Responsive improvements */
+        @media (max-width: 768px) {
+            .card {
+                margin-bottom: 20px;
+            }
+            
+            .nav-tabs .nav-link {
+                padding: 8px 14px;
+                font-size: 14px;
+            }
+            
+            .profile-header {
+                padding: 20px;
+            }
+            
+            .profile-avatar {
+                width: 80px;
+                height: 80px;
+            }
+        }
+        
+        .thinking-dots {
+            display: inline-flex;
+        }
+        
+        .thinking-dots span {
+            animation: thinking 1.4s infinite;
+            font-size: 20px;
+            line-height: 20px;
+        }
+        
+        .thinking-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .thinking-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes thinking {
+            0%, 60%, 100% {
+                transform: translateY(0);
+                opacity: 0.6;
+            }
+            30% {
+                transform: translateY(-8px);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="app-header">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="d-flex align-items-center">
+                    <img src="ChatGPT Image Apr 5, 2025, 02_57_59 PM.png" alt="ChatGPT Logo" style="height: 50px; margin-right: 10px;">
+                    <h1 class="app-logo"><i class="fas fa-heartbeat"></i> Recovery Assistant</h1>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#helpModal">
+                        <i class="fas fa-question-circle"></i> Help
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Navigation Tabs -->
+        <ul class="nav nav-tabs mb-4" id="appTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="body-map-tab" data-bs-toggle="tab" data-bs-target="#body-map" type="button" role="tab" aria-controls="body-map" aria-selected="true">
+                    <i class="fas fa-user-injured"></i> Body Map
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="activity-simulation-tab" data-bs-toggle="tab" data-bs-target="#activity-simulation" type="button" role="tab" aria-controls="activity-simulation" aria-selected="false">
+                    <i class="fas fa-running"></i> Activity Simulation
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="history-log-tab" data-bs-toggle="tab" data-bs-target="#history-log" type="button" role="tab" aria-controls="history-log" aria-selected="false">
+                    <i class="fas fa-history"></i> History Log
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="chatbot-tab" data-bs-toggle="tab" data-bs-target="#chatbot" type="button" role="tab" aria-controls="chatbot" aria-selected="false">
+                    <i class="fas fa-comment-medical"></i> Injury Chat
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">
+                    <i class="fas fa-user-circle"></i> Profile
+                </button>
+            </li>
+        </ul>
+        
+        <!-- Tab Content -->
+        <div class="tab-content" id="appTabContent">
+            <!-- Body Map Tab -->
+            <div class="tab-pane fade show active" id="body-map" role="tabpanel" aria-labelledby="body-map-tab">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <h5 class="card-title mb-3"><i class="fas fa-user-injured"></i> Interactive Body Map</h5>
+                                <div id="body-map-container" style="position: relative;">
+                                    <!-- SVG Body Map will be inserted here by JavaScript -->
+                                </div>
+                                <div class="d-flex justify-content-center mt-4 flex-wrap">
+                                    <div class="d-flex align-items-center me-3 mb-2">
+                                        <div class="health-indicator health-percent-100"></div>
+                                        <small class="ms-1">100% Healthy</small>
+                                    </div>
+                                    <div class="d-flex align-items-center me-3 mb-2">
+                                        <div class="health-indicator health-percent-70"></div>
+                                        <small class="ms-1">70% Healthy</small>
+                                    </div>
+                                    <div class="d-flex align-items-center me-3 mb-2">
+                                        <div class="health-indicator health-percent-40"></div>
+                                        <small class="ms-1">40% Healthy</small>
+                                    </div>
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="health-indicator health-percent-10"></div>
+                                        <small class="ms-1">10% Healthy</small>
+                                    </div>
+                                </div>
+                                <div class="mt-4">
+                                    <button id="clear-injuries-btn" class="btn btn-outline-danger">
+                                        <i class="fas fa-trash-alt"></i> Clear All Injuries
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title mb-3"><i class="fas fa-clipboard-list"></i> Body Part Details</h5>
+                                <div id="body-part-details">
+                                    <div class="text-center py-5">
+                                        <img src="https://cdn-icons-png.flaticon.com/512/1477/1477148.png" alt="Click on body" width="80" class="mb-3 opacity-50">
+                                        <p>Select a body part to view details</p>
+                                        <small class="text-muted">Click on any part of the body map to track recovery progress</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Profile Tab (New) -->
+            <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                <div class="profile-header mb-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div class="d-flex align-items-center">
+                                <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Profile" class="profile-avatar me-4">
+                                <div>
+                                    <h3 class="mb-1">Sarah Johnson</h3>
+                                    <p class="mb-2">Recovering Athlete</p>
+                                    <div class="d-flex gap-2">
+                                        <span class="badge bg-light text-dark">
+                                            <i class="fas fa-calendar-alt"></i> Member since Aug 2023
+                                        </span>
+                                        <span class="badge bg-light text-dark">
+                                            <i class="fas fa-running"></i> Runner
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mt-3 mt-md-0">
+                            <div class="d-flex justify-content-md-end">
+                                <button class="btn btn-light">
+                                    <i class="fas fa-edit"></i> Edit Profile
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row g-4 mb-4">
+                    <div class="col-md-4">
+                        <div class="profile-stats profile-stat-item">
+                            <div class="stat-value">85%</div>
+                            <div class="stat-label">Overall Health</div>
+                            <div class="progress mt-2">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: 85%" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="profile-stats profile-stat-item">
+                            <div class="stat-value">14</div>
+                            <div class="stat-label">Tracked Activities</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="profile-stats profile-stat-item">
+                            <div class="stat-value">28</div>
+                            <div class="stat-label">Recovery Days</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-lg-6 mb-4">
+                        <h5 class="section-title"><i class="fas fa-link"></i> Connected Services</h5>
+                        
+                        <div class="integration-card">
+                            <div class="d-flex align-items-center">
+                                <img src="https://cdn.shopify.com/s/files/1/0081/4784/3722/files/whoop-icon.png?v=1598386622" alt="Whoop Logo" class="integration-logo">
+                                <div>
+                                    <h6 class="mb-1">WHOOP</h6>
+                                    <p class="mb-0 text-muted small">Connect to sync recovery metrics</p>
+                                </div>
+                            </div>
+                            <div>
+                                <button class="btn whoop-connect-btn">
+                                    <i class="fas fa-plug"></i> Connect
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="integration-card">
+                            <div class="d-flex align-items-center">
+                                <img src="https://cdn.iconscout.com/icon/free/png-256/free-strava-2752049-2284866.png" alt="Strava Logo" class="integration-logo">
+                                <div>
+                                    <h6 class="mb-1">Strava</h6>
+                                    <p class="mb-0 text-muted small">Sync workout data</p>
+                                </div>
+                            </div>
+                            <div class="connected-status">
+                                <i class="fas fa-check-circle"></i> Connected
+                            </div>
+                        </div>
+                        
+                        <div class="integration-card">
+                            <div class="d-flex align-items-center">
+                                <img src="https://cdn-icons-png.flaticon.com/512/731/731962.png" alt="Apple Health Logo" class="integration-logo">
+                                <div>
+                                    <h6 class="mb-1">Apple Health</h6>
+                                    <p class="mb-0 text-muted small">Sync health data</p>
+                                </div>
+                            </div>
+                            <div class="not-connected-status">
+                                <button class="btn btn-sm btn-outline-primary">
+                                    Connect
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-6">
+                        <h5 class="section-title"><i class="fas fa-cog"></i> Settings</h5>
+                        
+                        <ul class="settings-list">
+                            <li>
+                                <div>
+                                    <h6 class="mb-0">Notification Preferences</h6>
+                                    <p class="mb-0 small text-muted">Receive daily reminders</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </li>
+                            <li>
+                                <div>
+                                    <h6 class="mb-0">Data Sync</h6>
+                                    <p class="mb-0 small text-muted">Automatic data synchronization</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </li>
+                            <li>
+                                <div>
+                                    <h6 class="mb-0">Privacy</h6>
+                                    <p class="mb-0 small text-muted">Keep my data private</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox">
+                                    <span class="slider"></span>
+                                </label>
+                            </li>
+                            <li>
+                                <div>
+                                    <h6 class="mb-0">Dark Mode</h6>
+                                    <p class="mb-0 small text-muted">Switch to dark theme</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox">
+                                    <span class="slider"></span>
+                                </label>
+                            </li>
+                        </ul>
+                        
+                        <div class="mt-4">
+                            <h5 class="section-title"><i class="fas fa-user-shield"></i> Account</h5>
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-outline-primary">Change Password</button>
+                                <button class="btn btn-outline-danger">Delete Account</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title"><i class="fas fa-chart-line"></i> WHOOP Recovery Data</h5>
+                                <p class="text-muted mb-4">Connect your WHOOP account to see recovery metrics here</p>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="placeholder-image text-center mb-3">
+                                            <img src="https://support.whoop.com/hc/article_attachments/4416475627411/Recovery.png" 
+                                                alt="Whoop Recovery Example" class="img-fluid rounded" style="max-height: 200px;">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Recovery Score</label>
+                                            <div class="progress" style="height: 20px;">
+                                                <div class="progress-bar bg-success" role="progressbar" style="width: 0%" 
+                                                    aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">Connect to view</div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label class="form-label">Strain Score</label>
+                                            <div class="progress" style="height: 20px;">
+                                                <div class="progress-bar bg-warning" role="progressbar" style="width: 0%" 
+                                                    aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">Connect to view</div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="form-label">Sleep Performance</label>
+                                            <div class="progress" style="height: 20px;">
+                                                <div class="progress-bar bg-info" role="progressbar" style="width: 0%" 
+                                                    aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">Connect to view</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-4 text-center">
+                                    <button class="btn whoop-connect-btn btn-lg">
+                                        <img src="https://cdn.shopify.com/s/files/1/0081/4784/3722/files/whoop-icon.png?v=1598386622" 
+                                            alt="Whoop Logo" width="20" height="20">
+                                        Connect to WHOOP
+                                    </button>
+                                    <p class="text-muted mt-2 small">Your injury recovery assistant will use WHOOP data to provide better recommendations</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Activity Simulation Tab -->
+            <div class="tab-pane fade" id="activity-simulation" role="tabpanel" aria-labelledby="activity-simulation-tab">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h3 class="mb-0"><i class="fas fa-running"></i> Activity Simulation</h3>
+                        <p class="text-muted mb-0">Simulate activities and their impact on your recovery</p>
+                    </div>
+                    <button id="run-simulation-btn" class="btn btn-primary">
+                        <i class="fas fa-play-circle"></i> Run Simulation
+                    </button>
+                </div>
+                
+                <div class="row g-3">
+                    <!-- Activity Parameters Card - Made more compact -->
+                    <div class="col-md-4">
+                        <div class="card h-100">
+                            <div class="card-header bg-light py-2">
+                                <h5 class="card-title mb-0"><i class="fas fa-sliders-h"></i> Activity Parameters</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label for="activity-type" class="form-label small fw-bold">Activity Type</label>
+                                    <select class="form-select form-select-sm" id="activity-type">
+                                        <option value="" selected disabled>Select an activity</option>
+                                        <option value="running">Running</option>
+                                        <option value="swimming">Swimming</option>
+                                        <option value="cycling">Cycling</option>
+                                        <option value="weightlifting">Weightlifting</option>
+                                        <option value="yoga">Yoga</option>
+                                        <option value="basketball">Basketball</option>
+                                        <option value="soccer">Soccer</option>
+                                        <option value="tennis">Tennis</option>
+                                        <option value="golf">Golf</option>
+                                        <option value="walking">Walking</option>
+                                        <option value="volleyball">Volleyball</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="activity-intensity" class="form-label small fw-bold">Intensity</label>
+                                    <div class="btn-group w-100" role="group">
+                                        <input type="radio" class="btn-check" name="intensity" id="intensity-low" value="low" autocomplete="off">
+                                        <label class="btn btn-outline-secondary btn-sm" for="intensity-low">Low</label>
+                                        
+                                        <input type="radio" class="btn-check" name="intensity" id="intensity-moderate" value="moderate" autocomplete="off" checked>
+                                        <label class="btn btn-outline-secondary btn-sm" for="intensity-moderate">Moderate</label>
+                                        
+                                        <input type="radio" class="btn-check" name="intensity" id="intensity-high" value="high" autocomplete="off">
+                                        <label class="btn btn-outline-secondary btn-sm" for="intensity-high">High</label>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label for="activity-duration" class="form-label small fw-bold">Duration: <span id="duration-value" class="text-primary">30</span> minutes</label>
+                                    <input type="range" class="form-range" id="activity-duration" min="10" max="120" step="5" value="30">
+                                    <div class="d-flex justify-content-between">
+                                        <small class="text-muted">10m</small>
+                                        <small class="text-muted">1h</small>
+                                        <small class="text-muted">2h</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-light py-2">
+                                <h6 class="mb-2 small fw-bold"><i class="fas fa-lightbulb"></i> Quick Select</h6>
+                                <div class="d-flex flex-wrap gap-1">
+                                    <span class="badge bg-light text-dark border pointer-cursor activity-quick-select" onclick="selectActivity('walking')">
+                                        <i class="fas fa-walking"></i> Walking
+                                    </span>
+                                    <span class="badge bg-light text-dark border pointer-cursor activity-quick-select" onclick="selectActivity('yoga')">
+                                        <i class="fas fa-pray"></i> Yoga
+                                    </span>
+                                    <span class="badge bg-light text-dark border pointer-cursor activity-quick-select" onclick="selectActivity('swimming')">
+                                        <i class="fas fa-swimming-pool"></i> Swimming
+                                    </span>
+                                    <span class="badge bg-light text-dark border pointer-cursor activity-quick-select" onclick="selectActivity('cycling')">
+                                        <i class="fas fa-biking"></i> Cycling
+                                    </span>
+                                    <span class="badge bg-light text-dark border pointer-cursor activity-quick-select" onclick="selectActivity('volleyball')">
+                                        <i class="fas fa-volleyball-ball"></i> Volleyball
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Results Card - Reorganized to show data more efficiently -->
+                    <div class="col-md-8">
+                        <div class="card h-100">
+                            <div class="card-header bg-light py-2">
+                                <ul class="nav nav-tabs card-header-tabs" id="simulation-tabs" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link active" id="results-tab" data-bs-toggle="tab" data-bs-target="#results-content" type="button" role="tab" aria-selected="true">
+                                            <i class="fas fa-chart-bar"></i> Results
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="recommendations-tab" data-bs-toggle="tab" data-bs-target="#recommendations-content" type="button" role="tab" aria-selected="false">
+                                            <i class="fas fa-lightbulb"></i> Recommendations
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <div class="card-body tab-content" id="simulation-tab-content">
+                                <!-- Simulation Results Tab -->
+                                <div class="tab-pane fade show active" id="results-content" role="tabpanel" aria-labelledby="results-tab">
+                                    <div id="simulation-results">
+                                        <div class="text-center py-4">
+                                            <div class="d-inline-block p-3 rounded-circle bg-light mb-3">
+                                                <i class="fas fa-running fa-2x text-primary"></i>
+                                            </div>
+                                            <h6>Activity Impact Analysis</h6>
+                                            <p class="text-muted">Select an activity and run the simulation to see how it would impact your recovery</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Recommendations Tab -->
+                                <div class="tab-pane fade" id="recommendations-content" role="tabpanel" aria-labelledby="recommendations-tab">
+                                    <div id="activity-recommendations">
+                                        <div class="text-center py-4">
+                                            <div class="d-inline-block p-3 rounded-circle bg-light mb-3">
+                                                <i class="fas fa-comment-medical fa-2x text-primary"></i>
+                                            </div>
+                                            <h6>Personalized Recommendations</h6>
+                                            <p class="text-muted">Run a simulation to receive advice tailored to your current condition</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- History Log Tab -->
+            <div class="tab-pane fade" id="history-log" role="tabpanel" aria-labelledby="history-log-tab">
+                <h3 class="mb-2"><i class="fas fa-history"></i> Health History Log</h3>
+                <p class="text-muted mb-4">Track your recovery journey and health metrics over time to monitor progress.</p>
+                
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0"><i class="fas fa-clipboard-list"></i> Recent Entries</h5>
+                        <div>
+                            <button id="view-tracking-btn" class="btn btn-primary me-2">
+                                <i class="fas fa-chart-line"></i> View Injury Tracking
+                            </button>
+                            <button id="add-entry-btn" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Add New Entry
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="history-entries" class="mt-4">
+                        <!-- History entries will be inserted here by JavaScript -->
+                    </div>
+                    
+                    <!-- Injury Tracking Section -->
+                    <div id="injury-tracking-section" style="display: none;">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0"><i class="fas fa-chart-line"></i> Daily Injury Tracking</h5>
+                            <button id="back-to-history-btn" class="btn btn-outline-primary">
+                                <i class="fas fa-arrow-left"></i> Back to History
+                            </button>
+                        </div>
+                        
+                        <div id="injury-tracking-content" class="mt-4">
+                            <!-- Injury tracking content will be inserted here by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- New Entry Form (initially hidden) -->
+                <div id="new-entry-form" style="display: none;">
+                    <div class="card mb-4 border-primary">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="card-title mb-0"><i class="fas fa-plus-circle"></i> New Health Entry</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="entry-date" class="form-label">Date</label>
+                                <input type="date" class="form-control" id="entry-date">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="entry-type" class="form-label">Entry Type</label>
+                                <select class="form-select" id="entry-type">
+                                    <option value="pain-update">Pain Update</option>
+                                    <option value="recovery-progress">Recovery Progress</option>
+                                    <option value="therapy-session">Therapy Session</option>
+                                    <option value="medical-visit">Medical Visit</option>
+                                    <option value="medication">Medication</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="entry-title" class="form-label">Title</label>
+                                <input type="text" class="form-control" id="entry-title" placeholder="Brief description">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="entry-notes" class="form-label">Notes</label>
+                                <textarea class="form-control" id="entry-notes" rows="3" placeholder="Details about your health status, activities, or recovery progress"></textarea>
+                            </div>
+                            
+                            <div class="d-flex justify-content-end">
+                                <button id="cancel-entry-btn" class="btn btn-outline-secondary me-2">
+                                    <i class="fas fa-times"></i> Cancel
+                                </button>
+                                <button id="save-entry-btn" class="btn btn-success">
+                                    <i class="fas fa-save"></i> Save Entry
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Chatbot Tab -->
+            <div class="tab-pane fade" id="chatbot" role="tabpanel" aria-labelledby="chatbot-tab">
+                <h3 class="mb-2"><i class="fas fa-comment-medical"></i> Injury Insights Chat</h3>
+                <p class="text-muted mb-4">Get AI-powered advice and insights about your injury and recovery process.</p>
+                
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="chat-container" id="chat-messages">
+                            <div class="chat-message bot-message">
+                                <div class="mb-2 d-flex align-items-center">
+                                    <i class="fas fa-robot me-2"></i>
+                                    <strong>Recovery Assistant</strong>
+                                </div>
+                                Hello! I'm your Injury Recovery Assistant. How can I help you with your recovery today?
+                            </div>
+                        </div>
+                        
+                        <div class="input-group mb-3">
+                            <input type="text" id="chat-input" class="form-control" placeholder="Type your message here...">
+                            <button id="send-message-btn" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i> Send
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title mb-3"><i class="fas fa-question-circle"></i> Suggested Questions</h5>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-outline-primary btn-sm text-start suggested-question">
+                                        How long should I rest my sprained ankle?
+                                    </button>
+                                    <button class="btn btn-outline-primary btn-sm text-start suggested-question">
+                                        What exercises are good for shoulder recovery?
+                                    </button>
+                                    <button class="btn btn-outline-primary btn-sm text-start suggested-question">
+                                        When should I see a doctor about my knee pain?
+                                    </button>
+                                    <button class="btn btn-outline-primary btn-sm text-start suggested-question">
+                                        How can I prevent shin splints?
+                                    </button>
+                                    <button class="btn btn-outline-primary btn-sm text-start suggested-question">
+                                        What's the best way to recover after training?
+                                    </button>
+                                </div>
+                                
+                                <hr>
+                                
+                                <h6 class="mb-3">Based on Your Activity</h6>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-outline-secondary btn-sm text-start">
+                                        How to prevent re-injury during basketball?
+                                    </button>
+                                    <button class="btn btn-outline-secondary btn-sm text-start">
+                                        Tips for running with knee pain?
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Help Modal -->
+    <div class="modal fade" id="helpModal" tabindex="-1" aria-labelledby="helpModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="helpModalLabel"><i class="fas fa-question-circle"></i> Help & Getting Started</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <h5><i class="fas fa-user-injured"></i> Body Map</h5>
+                            <p>The interactive body map allows you to:</p>
+                            <ul>
+                                <li>Click on body parts to view and update their health status</li>
+                                <li>Track injury types and recovery progress</li>
+                                <li>Hover over body parts to see current health percentage</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <h5><i class="fas fa-running"></i> Activity Simulation</h5>
+                            <p>Simulate how different activities might affect your recovery:</p>
+                            <ul>
+                                <li>Select activities, intensity, and duration</li>
+                                <li>Get personalized risk assessments</li>
+                                <li>Receive recommendations based on your current injuries</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <h5><i class="fas fa-history"></i> History Log</h5>
+                            <p>Track your recovery journey over time:</p>
+                            <ul>
+                                <li>Record pain updates, therapy sessions, and medical visits</li>
+                                <li>Document medications and recovery progress</li>
+                                <li>View a chronological list of health events</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <h5><i class="fas fa-comment-medical"></i> Injury Chat</h5>
+                            <p>Get AI-powered advice about your recovery:</p>
+                            <ul>
+                                <li>Ask questions about injuries and recovery</li>
+                                <li>Get recommendations for exercises and treatments</li>
+                                <li>Learn when to seek medical attention</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h5><i class="fas fa-user-circle"></i> Profile</h5>
+                            <p>Manage your profile and external integrations:</p>
+                            <ul>
+                                <li>Connect to WHOOP for recovery metrics</li>
+                                <li>Adjust application settings</li>
+                                <li>View overall health statistics</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Got it!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Include Bootstrap JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Chart.js for injury tracking visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Application JavaScript -->
+    <script>
+        // ---------- DATA MODELS ----------
+        
+        // Body parts data with injury information
+        const bodyPartsData = [
+            { id: 'head', name: 'Head', percentHealthy: 100, injuryType: 'none', healingStatus: 'Healthy' },
+            { id: 'neck', name: 'Neck', percentHealthy: 100, injuryType: 'none', healingStatus: 'Healthy' },
+            { id: 'rightShoulder', name: 'Right Shoulder', percentHealthy: 100, injuryType: 'none', healingStatus: 'Healthy' },
+            { id: 'leftShoulder', name: 'Left Shoulder', percentHealthy: 100, injuryType: 'none', healingStatus: 'Healthy' },
+            { id: 'rightArm', name: 'Right Arm', percentHealthy: 100, injuryType: 'none', healingStatus: 'Healthy' },
+            { id: 'leftArm', name: 'Left Arm', percentHealthy: 100, injuryType: 'none', healingStatus: 'Healthy' },
+            { id: 'rightElbow', name: 'Right Elbow', percentHealthy: 100, injuryType: 'none', healingStatus: 'Healthy' },
+            { id: 'leftElbow', name: 'Left Elbow', percentHealthy: 100, injuryType: 'none', healingStatus: 'Healthy' },
+            { id: 'rightWrist', name: 'Right Wrist', percentHealthy: 100, injuryType: 'none', healingStatus: 'Healthy' },
+            { id: 'leftWrist', name: 'Left Wrist', percentHealthy: 100, injuryType: 'none', healingStatus: 'Healthy' },
+            { id: 'chest', name: 'Chest', percentHealthy: 100, injuryType: 'none', healingStatus: 'Healthy' },
+            { id: 'abdomen', name: 'Abdomen', percentHealthy: 100, injuryType: 'none', healingStatus: 'Healthy' },
+            { id: 'back', name: 'Back', percentHealthy: 100, injuryType: 'none', healingStatus: 'Healthy' },
+            { id: 'groin', name: 'Groin', percentHealthy: 100, injuryType: 'none', healingStatus: 'Healthy' },
+            { id: 'rightHip', name: 'Right Hip', percentHealthy: 100, injuryType: 'none', healingStatus: 'Healthy' },
+            { id: 'leftHip', name: 'Left Hip', percentHealthy: 100, injuryType: 'none', healingStatus: 'Healthy' },
+            { id: 'rightLeg', name: 'Right Knee', percentHealthy: 100, injuryType: 'none', healingStatus: 'Healthy' },
+            { id: 'leftLeg', name: 'Left Knee', percentHealthy: 100, injuryType: 'none', healingStatus: 'Healthy' },
+            { id: 'rightShin', name: 'Right Shin', percentHealthy: 100, injuryType: 'none', healingStatus: 'Healthy' },
+            { id: 'leftShin', name: 'Left Shin', percentHealthy: 100, injuryType: 'none', healingStatus: 'Healthy' },
+            { id: 'rightAchilles', name: 'Right Achilles', percentHealthy: 100, injuryType: 'none', healingStatus: 'Healthy' },
+            { id: 'leftAchilles', name: 'Left Achilles', percentHealthy: 100, injuryType: 'none', healingStatus: 'Healthy' },
+            { id: 'rightAnkle', name: 'Right Ankle', percentHealthy: 100, injuryType: 'none', healingStatus: 'Healthy' },
+            { id: 'leftAnkle', name: 'Left Ankle', percentHealthy: 100, injuryType: 'none', healingStatus: 'Healthy' },
+            { id: 'rightFoot', name: 'Right Foot', percentHealthy: 100, injuryType: 'none', healingStatus: 'Healthy' },
+            { id: 'leftFoot', name: 'Left Foot', percentHealthy: 100, injuryType: 'none', healingStatus: 'Healthy' },
+        ];
+        
+        // Daily tracking of body part health over time
+        let bodyPartHistoryData = {};
+        
+        // Activity options for simulation
+        const activityOptions = [
+            { name: 'running', intensity: 'moderate', impactedAreas: ['knees', 'ankles', 'shins', 'achilles'], riskLevel: 5 },
+            { name: 'swimming', intensity: 'low', impactedAreas: ['shoulders', 'back'], riskLevel: 2 },
+            { name: 'cycling', intensity: 'low', impactedAreas: ['knees', 'back', 'wrists'], riskLevel: 3 },
+            { name: 'weightlifting', intensity: 'moderate', impactedAreas: ['shoulders', 'back', 'wrists', 'elbows'], riskLevel: 4 },
+            { name: 'yoga', intensity: 'low', impactedAreas: ['back', 'hips'], riskLevel: 1 },
+            { name: 'basketball', intensity: 'high', impactedAreas: ['knees', 'ankles', 'wrists'], riskLevel: 6 },
+            { name: 'soccer', intensity: 'high', impactedAreas: ['knees', 'ankles', 'groin', 'shins'], riskLevel: 6 },
+            { name: 'tennis', intensity: 'moderate', impactedAreas: ['shoulders', 'elbows', 'wrists', 'knees'], riskLevel: 4 },
+            { name: 'golf', intensity: 'low', impactedAreas: ['back', 'shoulders', 'wrists'], riskLevel: 2 },
+            { name: 'walking', intensity: 'low', impactedAreas: ['ankles', 'feet'], riskLevel: 1 },
+            { name: 'volleyball', intensity: 'moderate', impactedAreas: ['shoulders', 'knees', 'ankles', 'wrists'], riskLevel: 5 },
+        ];
+        
+        // Sample history entries
+        const historyEntries = [
+            {
+                id: 1,
+                date: '2023-08-15',
+                type: 'medical-visit',
+                title: 'Initial Doctor Appointment',
+                notes: 'Diagnosed with a grade 2 ankle sprain. Doctor recommended RICE protocol and physical therapy.'
+            },
+            {
+                id: 2,
+                date: '2023-08-22',
+                type: 'therapy-session',
+                title: 'First PT Session',
+                notes: 'Started gentle mobility exercises. Therapist suggested daily ankle circles and isometric exercises.'
+            },
+            {
+                id: 3,
+                date: '2023-09-05',
+                type: 'pain-update',
+                title: 'Pain Level Decreasing',
+                notes: 'Ankle pain has reduced from 8/10 to 5/10. Still having difficulty with lateral movements.'
+            },
+            {
+                id: 4,
+                date: '2023-09-18',
+                type: 'recovery-progress',
+                title: 'Started Light Jogging',
+                notes: 'Able to jog for 5 minutes without significant pain. Using ankle brace for support.'
+            }
+        ];
+        
+        // Chat response templates
+        const chatResponses = {
+            'ankle': 'For a sprained ankle, the RICE protocol (Rest, Ice, Compression, Elevation) is recommended for the first 48-72 hours. Gradually reintroduce movement with gentle exercises as pain allows. Full recovery typically takes 4-6 weeks for moderate sprains.',
+            'shoulder': 'Shoulder recovery exercises include pendulum swings, wall walks, and gentle stretching. Start with pain-free range of motion exercises before progressing to strengthening. Consistency is key - small, frequent sessions are better than occasional intense ones.',
+            'knee': 'You should consider seeing a doctor about knee pain if: it persists for more than a week, you can\'t bear weight, experience significant swelling, can\'t fully extend or flex the knee, or if the pain interferes with daily activities.',
+            'shin': 'To prevent shin splints: 1) Wear proper supportive footwear 2) Gradually increase activity intensity 3) Cross-train with low-impact activities 4) Strengthen calf and shin muscles 5) Stretch before and after exercise 6) Run on softer surfaces when possible',
+            'default': 'To support your recovery, ensure you\'re getting adequate rest, proper nutrition, and staying hydrated. Follow your healthcare provider\'s recommendations and be patient with the healing process. Consistency with prescribed exercises is crucial for optimal recovery.'
+        };
+        
+        // ---------- BODY MAP FUNCTIONALITY ----------
+        
+        // Create SVG Body Map
+        function createBodyMap() {
+            const container = document.getElementById('body-map-container');
+            const tooltip = document.createElement('div');
+            tooltip.className = 'body-part-tooltip';
+            container.appendChild(tooltip);
+            
+            // Create SVG element
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('width', '300');
+            svg.setAttribute('height', '500');
+            svg.setAttribute('viewBox', '0 0 300 500');
+            svg.style.margin = '0 auto';
+            svg.style.display = 'block';
+            
+            // Define body parts
+            const bodyParts = [
+                { id: 'head', d: 'M150,40 C130,40 115,55 115,75 C115,95 130,110 150,110 C170,110 185,95 185,75 C185,55 170,40 150,40', fill: '#f5f5f5', stroke: '#000', strokeWidth: 2 },
+                { id: 'neck', d: 'M135,110 L135,130 L165,130 L165,110', fill: '#f5f5f5', stroke: '#000', strokeWidth: 2 },
+                { id: 'chest', d: 'M100,130 L135,130 L135,180 L165,180 L165,130 L200,130 L200,210 L100,210 Z', fill: '#f5f5f5', stroke: '#000', strokeWidth: 2 },
+                { id: 'abdomen', d: 'M100,210 L200,210 L200,270 L100,270 Z', fill: '#f5f5f5', stroke: '#000', strokeWidth: 2 },
+                { id: 'back', d: 'M115,170 L185,170 L185,230 L115,230 Z', fill: 'none', stroke: '#000', strokeWidth: 2, strokeDasharray: '5,5' },
+                { id: 'groin', d: 'M100,270 L200,270 L180,300 L120,300 Z', fill: '#f5f5f5', stroke: '#000', strokeWidth: 2 },
+                { id: 'rightShoulder', d: 'M100,130 L100,150 L80,160 L75,140 Z', fill: '#f5f5f5', stroke: '#000', strokeWidth: 2 },
+                { id: 'leftShoulder', d: 'M200,130 L200,150 L220,160 L225,140 Z', fill: '#f5f5f5', stroke: '#000', strokeWidth: 2 },
+                { id: 'rightArm', d: 'M75,140 L80,160 L65,210 L50,205 Z', fill: '#f5f5f5', stroke: '#000', strokeWidth: 2 },
+                { id: 'leftArm', d: 'M225,140 L220,160 L235,210 L250,205 Z', fill: '#f5f5f5', stroke: '#000', strokeWidth: 2 },
+                { id: 'rightElbow', d: 'M50,205 L65,210 L55,230 L40,225 Z', fill: '#f5f5f5', stroke: '#000', strokeWidth: 2 },
+                { id: 'leftElbow', d: 'M250,205 L235,210 L245,230 L260,225 Z', fill: '#f5f5f5', stroke: '#000', strokeWidth: 2 },
+                { id: 'rightWrist', d: 'M40,225 L55,230 L50,260 L35,260 Z', fill: '#f5f5f5', stroke: '#000', strokeWidth: 2 },
+                { id: 'leftWrist', d: 'M260,225 L245,230 L250,260 L265,260 Z', fill: '#f5f5f5', stroke: '#000', strokeWidth: 2 },
+                { id: 'rightHip', d: 'M120,300 L120,320 L90,320 L100,270 Z', fill: '#f5f5f5', stroke: '#000', strokeWidth: 2 },
+                { id: 'leftHip', d: 'M180,300 L180,320 L210,320 L200,270 Z', fill: '#f5f5f5', stroke: '#000', strokeWidth: 2 },
+                { id: 'rightLeg', d: 'M90,320 L120,320 L120,370 L90,370 Z', fill: '#f5f5f5', stroke: '#000', strokeWidth: 2 },
+                { id: 'leftLeg', d: 'M180,320 L210,320 L210,370 L180,370 Z', fill: '#f5f5f5', stroke: '#000', strokeWidth: 2 },
+                { id: 'rightShin', d: 'M90,370 L120,370 L120,430 L90,430 Z', fill: '#f5f5f5', stroke: '#000', strokeWidth: 2 },
+                { id: 'leftShin', d: 'M180,370 L210,370 L210,430 L180,430 Z', fill: '#f5f5f5', stroke: '#000', strokeWidth: 2 },
+                { id: 'rightAchilles', d: 'M90,430 L105,430 L105,450 L90,450 Z', fill: '#f5f5f5', stroke: '#000', strokeWidth: 2 },
+                { id: 'leftAchilles', d: 'M195,430 L210,430 L210,450 L195,450 Z', fill: '#f5f5f5', stroke: '#000', strokeWidth: 2 },
+                { id: 'rightAnkle', d: 'M90,430 L120,430 L120,450 L105,450 L105,430 Z', fill: '#f5f5f5', stroke: '#000', strokeWidth: 2 },
+                { id: 'leftAnkle', d: 'M180,430 L210,430 L210,450 L195,450 L195,430 Z', fill: '#f5f5f5', stroke: '#000', strokeWidth: 2 },
+                { id: 'rightFoot', d: 'M90,450 L105,450 L105,470 L75,470 Z', fill: '#f5f5f5', stroke: '#000', strokeWidth: 2 },
+                { id: 'leftFoot', d: 'M195,450 L210,450 L225,470 L195,470 Z', fill: '#f5f5f5', stroke: '#000', strokeWidth: 2 },
+            ];
+            
+            // Create path elements for each body part
+            bodyParts.forEach(part => {
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                path.setAttribute('id', part.id);
+                path.setAttribute('d', part.d);
+                path.setAttribute('fill', part.fill || 'none');
+                path.setAttribute('stroke', part.stroke || '#000');
+                path.setAttribute('stroke-width', part.strokeWidth || 1);
+                if (part.strokeDasharray) {
+                    path.setAttribute('stroke-dasharray', part.strokeDasharray);
+                }
+                
+                // Add health percent class
+                const bodyPart = bodyPartsData.find(p => p.id === part.id);
+                if (bodyPart) {
+                    // Round to nearest 10 for class naming
+                    const roundedPercent = Math.round(bodyPart.percentHealthy / 10) * 10;
+                    path.classList.add(`health-percent-${roundedPercent}`);
+                }
+                
+                // Add hover effect
+                path.classList.add('body-part');
+                
+                // Add hover data attributes for original styles
+                path.dataset.originalStrokeWidth = part.strokeWidth || 1;
+                path.dataset.originalStroke = part.stroke || '#000';
+                
+                // Add event listeners for hover and click
+                path.addEventListener('mouseover', handleBodyPartHover);
+                path.addEventListener('mouseout', handleBodyPartMouseOut);
+                path.addEventListener('click', () => handleBodyPartClick(part.id));
+                
+                svg.appendChild(path);
+            });
+            
+            container.appendChild(svg);
+        }
+        
+        // Helper function to get health percent class
+        function getHealthPercentClass(partId) {
+            const part = bodyPartsData.find(p => p.id === partId);
+            if (!part) return 100;
+            
+            // Round to nearest 10 for class names
+            return Math.round(part.percentHealthy / 10) * 10;
+        }
+        
+        // Helper function to get part color (for paths)
+        function getPartColor(partId) {
+            const part = bodyPartsData.find(p => p.id === partId);
+            if (!part) return '#4caf50'; // Default healthy green
+            
+            const health = part.percentHealthy;
+            
+            if (health >= 90) return '#4caf50'; // Green (healthy)
+            if (health >= 70) return '#8bc34a'; // Light green
+            if (health >= 50) return '#ffeb3b'; // Yellow
+            if (health >= 30) return '#ff9800'; // Orange
+            return '#f44336'; // Red (unhealthy)
+        }
+        
+        // Handle body part hover
+        function handleBodyPartHover(event) {
+            const partId = event.target.id;
+            const part = bodyPartsData.find(p => p.id === partId);
+            if (!part) return;
+            
+            // Store original stroke-width and stroke color for recovery on mouseout
+            if (!event.target.dataset.originalStrokeWidth) {
+                event.target.dataset.originalStrokeWidth = event.target.getAttribute('stroke-width') || 
+                  (event.target.tagName === 'path' && !event.target.getAttribute('fill') ? 
+                    (event.target.id.includes('Shin') || event.target.id.includes('Leg') ? '15' : 
+                    event.target.id.includes('Arm') ? '8' : 
+                    event.target.id.includes('Hip') || event.target.id.includes('Shoulder') ? '10' : '1.5') : '1.5');
+            }
+            
+            if (!event.target.dataset.originalStroke) {
+                event.target.dataset.originalStroke = event.target.getAttribute('stroke') || '#000000';
+            }
+            
+            // Update tooltip
+            const tooltip = document.querySelector('.body-part-tooltip');
+            tooltip.innerHTML = `
+                <strong>${part.name}</strong><br>
+                Health: ${part.percentHealthy}%<br>
+                Status: ${part.healingStatus}
+            `;
+            
+            // Position tooltip - improved positioning that stays within container
+            const bodyMapContainer = document.getElementById('body-map-container');
+            const containerRect = bodyMapContainer.getBoundingClientRect();
+            
+            // Get the midpoint of the body part SVG element
+            const svgRect = event.target.getBoundingClientRect();
+            const midX = (svgRect.left + svgRect.right) / 2 - containerRect.left;
+            const top = svgRect.top - containerRect.top - 10; // Position above the element
+            
+            // Calculate tooltip dimensions (needs to be visible first)
+            tooltip.style.display = 'block';
+            const tooltipWidth = tooltip.offsetWidth;
+            const tooltipHeight = tooltip.offsetHeight;
+            
+            // Adjust horizontal position to keep tooltip within container
+            let leftPos = midX - (tooltipWidth / 2);
+            if (leftPos < 5) leftPos = 5;
+            if (leftPos + tooltipWidth > containerRect.width - 5) leftPos = containerRect.width - tooltipWidth - 5;
+            
+            // Adjust vertical position - if tooltip would go out of top, position it below element instead
+            let topPos = top - tooltipHeight;
+            if (topPos < 5) topPos = svgRect.bottom - containerRect.top + 5;
+            
+            tooltip.style.left = `${leftPos}px`;
+            tooltip.style.top = `${topPos}px`;
+            
+            // Highlight the hovered part with consistent styling
+            event.target.setAttribute('stroke', '#2196f3');
+            event.target.setAttribute('stroke-width', '3');
+        }
+        
+        // Handle mouseout event - proper restoration of original state
+        function handleBodyPartMouseOut(event) {
+            const tooltip = document.querySelector('.body-part-tooltip');
+            tooltip.style.display = 'none';
+            
+            // Restore original stroke width and color from saved data attributes
+            if (event.target.dataset.originalStrokeWidth) {
+                event.target.setAttribute('stroke-width', event.target.dataset.originalStrokeWidth);
+            }
+            
+            // For path elements, restore the color based on health percent
+            if (event.target.tagName === 'path' && !event.target.getAttribute('fill')) {
+                event.target.setAttribute('stroke', getPartColor(event.target.id));
+            } else if (event.target.dataset.originalStroke) {
+                // For other elements, restore original stroke color
+                event.target.setAttribute('stroke', event.target.dataset.originalStroke);
+            }
+        }
+        
+        // Handle body part click
+        function handleBodyPartClick(partId) {
+            const part = bodyPartsData.find(p => p.id === partId);
+            if (part) {
+                updateBodyPartDetails(part);
+            }
+        }
+        
+        // Update body part details panel
+        function updateBodyPartDetails(part) {
+            const detailsPanel = document.getElementById('body-part-details');
+            
+            // Get the history for this part if it exists
+            const history = bodyPartHistoryData[part.id] || [];
+            const hasHistory = history.length > 0;
+            
+            detailsPanel.innerHTML = `
+                <h4 class="mb-3">${part.name}</h4>
+                
+                <form id="body-part-form">
+                    <div class="mb-3">
+                        <label for="health-percent" class="form-label">Health Percentage: <span id="health-value">${part.percentHealthy}</span>%</label>
+                        <input type="range" class="form-range" id="health-percent" min="0" max="100" step="10" value="${part.percentHealthy}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="injury-type" class="form-label">Injury Type</label>
+                        <select class="form-select" id="injury-type">
+                            <option value="none" ${part.injuryType === 'none' ? 'selected' : ''}>None</option>
+                            <option value="strain" ${part.injuryType === 'strain' ? 'selected' : ''}>Strain</option>
+                            <option value="sprain" ${part.injuryType === 'sprain' ? 'selected' : ''}>Sprain</option>
+                            <option value="bruise" ${part.injuryType === 'bruise' ? 'selected' : ''}>Bruise</option>
+                            <option value="fracture" ${part.injuryType === 'fracture' ? 'selected' : ''}>Fracture</option>
+                            <option value="tendonitis" ${part.injuryType === 'tendonitis' ? 'selected' : ''}>Tendonitis</option>
+                            <option value="soreness" ${part.injuryType === 'soreness' ? 'selected' : ''}>Soreness</option>
+                            <option value="mild soreness" ${part.injuryType === 'mild soreness' ? 'selected' : ''}>Mild Soreness</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="healing-status" class="form-label">Healing Status</label>
+                        <select class="form-select" id="healing-status">
+                            <option value="Healthy" ${part.healingStatus === 'Healthy' ? 'selected' : ''}>Healthy</option>
+                            <option value="Minor discomfort" ${part.healingStatus === 'Minor discomfort' ? 'selected' : ''}>Minor discomfort</option>
+                            <option value="Moderate discomfort" ${part.healingStatus === 'Moderate discomfort' ? 'selected' : ''}>Moderate discomfort</option>
+                            <option value="Significant injury - needs rest" ${part.healingStatus === 'Significant injury - needs rest' ? 'selected' : ''}>Significant injury - needs rest</option>
+                            <option value="Recovering" ${part.healingStatus === 'Recovering' ? 'selected' : ''}>Recovering</option>
+                            <option value="Acute injury" ${part.healingStatus === 'Acute injury' ? 'selected' : ''}>Acute injury</option>
+                            <option value="Chronic issue" ${part.healingStatus === 'Chronic issue' ? 'selected' : ''}>Chronic issue</option>
+                        </select>
+                    </div>
+                    
+                    <div class="d-flex justify-content-end mt-4">
+                        <button type="button" class="btn btn-outline-secondary me-2" onclick="resetBodyPartDetailsPanel()">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="saveBodyPartDetails('${part.id}')">Save</button>
+                    </div>
+                </form>
+                
+                ${hasHistory ? `
+                <hr class="my-4">
+                <div class="mt-3">
+                    <h6 class="mb-3">Recent Change History</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Health %</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${history.slice(0, 3).map(entry => `
+                                <tr>
+                                    <td>${entry.date}</td>
+                                    <td>${entry.percentHealthy}%</td>
+                                    <td>${entry.healingStatus}</td>
+                                </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-end">
+                        <button class="btn btn-sm btn-link" onclick="showBodyPartHistory('${part.id}')">View full history</button>
+                    </div>
+                </div>
+                ` : ''}
+            `;
+            
+            // Add event listener to update the displayed health value
+            document.getElementById('health-percent').addEventListener('input', function() {
+                document.getElementById('health-value').textContent = this.value;
+                
+                // Automatically update injury type and healing status based on health percentage
+                const healthPercent = parseInt(this.value);
+                const injuryTypeSelect = document.getElementById('injury-type');
+                const healingStatusSelect = document.getElementById('healing-status');
+                
+                if (healthPercent === 100) {
+                    injuryTypeSelect.value = 'none';
+                    healingStatusSelect.value = 'Healthy';
+                } else if (healthPercent >= 80) {
+                    if (injuryTypeSelect.value === 'none') {
+                        injuryTypeSelect.value = 'mild soreness';
+                    }
+                    if (healingStatusSelect.value === 'Healthy') {
+                        healingStatusSelect.value = 'Minor discomfort';
+                    }
+                } else if (healthPercent >= 50) {
+                    if (injuryTypeSelect.value === 'none' || injuryTypeSelect.value === 'mild soreness') {
+                        injuryTypeSelect.value = 'soreness';
+                    }
+                    if (healingStatusSelect.value === 'Healthy' || healingStatusSelect.value === 'Minor discomfort') {
+                        healingStatusSelect.value = 'Moderate discomfort';
+                    }
+                } else {
+                    if (injuryTypeSelect.value === 'none' || injuryTypeSelect.value === 'mild soreness' || injuryTypeSelect.value === 'soreness') {
+                        injuryTypeSelect.value = 'strain';
+                    }
+                    if (healingStatusSelect.value === 'Healthy' || healingStatusSelect.value === 'Minor discomfort' || healingStatusSelect.value === 'Moderate discomfort') {
+                        healingStatusSelect.value = 'Significant injury - needs rest';
+                    }
+                }
+            });
+        }
+        
+        // Save body part details
+        function saveBodyPartDetails(partId) {
+            const healthPercent = parseInt(document.getElementById('health-percent').value);
+            const injuryType = document.getElementById('injury-type').value;
+            const healingStatus = document.getElementById('healing-status').value;
+            
+            // Use the new saveBodyPartUpdate function instead of directly updating
+            saveBodyPartUpdate(partId, healthPercent, injuryType, healingStatus);
+        }
+        
+        // Show body part history by opening the history log tab with tracking view
+        function showBodyPartHistory(partId) {
+            // Switch to history tab
+            document.querySelector('#history-log-tab').click();
+            
+            // Show tracking view
+            document.getElementById('history-entries').style.display = 'none';
+            document.getElementById('new-entry-form').style.display = 'none';
+            document.getElementById('injury-tracking-section').style.display = 'block';
+            document.getElementById('add-entry-btn').style.display = 'inline-block';
+            document.getElementById('view-tracking-btn').style.display = 'inline-block';
+            
+            // Render tracking view
+            renderInjuryTrackingView();
+            
+            // Scroll to the specific body part card
+            setTimeout(() => {
+                const partCard = document.getElementById(`chart-${partId}`);
+                if (partCard) {
+                    partCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    // Highlight the card temporarily
+                    const card = partCard.closest('.card');
+                    if (card) {
+                        card.style.boxShadow = '0 0 15px rgba(66, 133, 244, 0.7)';
+                        setTimeout(() => {
+                            card.style.boxShadow = '';
+                        }, 2000);
+                    }
+                }
+            }, 100);
+        }
+        
+        // Update health percent
+        function updateHealthPercent(partId, value) {
+            const part = bodyPartsData.find(p => p.id === partId);
+            if (part) {
+                part.percentHealthy = parseInt(value);
+                
+                // Update healing status based on health percent
+                if (part.percentHealthy === 100) {
+                    part.injuryType = 'none';
+                    part.healingStatus = 'Healthy';
+                    document.getElementById('injury-type').value = 'none';
+                    document.getElementById('healing-status').value = 'Healthy';
+                } else if (part.percentHealthy >= 80) {
+                    part.healingStatus = 'Almost recovered';
+                    document.getElementById('healing-status').value = 'Almost recovered';
+                } else if (part.percentHealthy >= 50) {
+                    part.healingStatus = 'Recovering well';
+                    document.getElementById('healing-status').value = 'Recovering well';
+                } else if (part.percentHealthy >= 30) {
+                    part.healingStatus = 'Limited function';
+                    document.getElementById('healing-status').value = 'Limited function';
+                } else {
+                    part.healingStatus = 'Significant injury - needs care';
+                    document.getElementById('healing-status').value = 'Significant injury - needs care';
+                }
+                
+                // Update the visual representation
+                const element = document.getElementById(partId);
+                if (element) {
+                    // Remove all health percent classes
+                    for (let i = 0; i <= 100; i += 10) {
+                        element.classList.remove(`health-percent-${i}`);
+                    }
+                    // Add the new health percent class
+                    const roundedPercent = Math.round(part.percentHealthy / 10) * 10;
+                    element.classList.add(`health-percent-${roundedPercent}`);
+                    
+                    // For elements that use stroke instead of fill
+                    if (element.tagName === 'path' && !element.getAttribute('fill')) {
+                        element.setAttribute('stroke', getPartColor(partId));
+                    }
+                }
+            }
+        }
+        
+        // Update injury type
+        function updateInjuryType(partId, value) {
+            const part = bodyPartsData.find(p => p.id === partId);
+            if (part) {
+                part.injuryType = value;
+            }
+        }
+        
+        // Update healing status
+        function updateHealingStatus(partId, value) {
+            const part = bodyPartsData.find(p => p.id === partId);
+            if (part) {
+                part.healingStatus = value;
+            }
+        }
+        
+        // Reset body part details panel
+        function resetBodyPartDetails() {
+            const detailsPanel = document.getElementById('body-part-details');
+            detailsPanel.innerHTML = `
+                <div class="text-center py-5">
+                    <p>Select a body part to view details</p>
+                    <small class="text-muted">Click on any part of the body map to track recovery progress</small>
+                </div>
+            `;
+        }
+        
+        // Save body part update
+        function saveBodyPartUpdate(partId) {
+            alert(`Recovery update for ${bodyPartsData.find(p => p.id === partId)?.name} has been saved.`);
+            
+            // Add a new entry to the history log
+            const part = bodyPartsData.find(p => p.id === partId);
+            if (part) {
+                const newEntry = {
+                    id: historyEntries.length + 1,
+                    date: new Date().toISOString().split('T')[0], // Today's date in YYYY-MM-DD format
+                    type: 'health-update',
+                    title: `${part.name} Update`,
+                    notes: `Updated health level to ${part.percentHealthy}%. Current status: ${part.healingStatus}`
+                };
+                historyEntries.unshift(newEntry); // Add to beginning of array
+                
+                // Update history entries if we're on that tab
+                if (document.getElementById('history-entries').childElementCount > 0) {
+                    renderHistoryEntries();
+                }
+            }
+            
+            resetBodyPartDetails();
+        }
+        
+        // Clear all injuries
+        function clearAllInjuries() {
+            if (confirm('Are you sure you want to reset all body parts to 100% healthy?')) {
+                // Reset all body parts data
+                bodyPartsData.forEach(part => {
+                    part.percentHealthy = 100;
+                    part.injuryType = 'none';
+                    part.healingStatus = 'Healthy';
+                    
+                    // Update the visual representation
+                    const element = document.getElementById(part.id);
+                    if (element) {
+                        // Remove all health percent classes
+                        for (let i = 0; i <= 100; i += 10) {
+                            element.classList.remove(`health-percent-${i}`);
+                        }
+                        // Add health percent 100 class
+                        element.classList.add('health-percent-100');
+                        
+                        // For elements that use stroke instead of fill
+                        if (element.tagName === 'path' && !element.getAttribute('fill')) {
+                            element.setAttribute('stroke', '#4caf50');
+                        }
+                    }
+                });
+                
+                // Reset details panel if open
+                resetBodyPartDetails();
+                
+                // Add a new entry to the history log
+                const newEntry = {
+                    id: historyEntries.length + 1,
+                    date: new Date().toISOString().split('T')[0], // Today's date in YYYY-MM-DD format
+                    type: 'recovery-progress',
+                    title: 'Reset Body Map',
+                    notes: 'Reset all body parts to 100% healthy status.'
+                };
+                historyEntries.unshift(newEntry);
+                
+                // Update history entries if we're on that tab
+                if (document.getElementById('history-entries').childElementCount > 0) {
+                    renderHistoryEntries();
+                }
+                
+                alert('All body parts have been reset to 100% healthy status.');
+            }
+        }
+        
+        // ---------- ACTIVITY SIMULATION FUNCTIONALITY ----------
+        
+        // Initialize activity simulation tab
+        function initActivitySimulation() {
+            // Initialize activity duration slider
+            document.getElementById('activity-duration').addEventListener('input', function() {
+                document.getElementById('duration-value').textContent = this.value;
+            });
+            
+            // Initialize intensity radio buttons to replace the select
+            document.querySelectorAll('input[name="intensity"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    // This will ensure the selected value is available when the simulation runs
+                    document.getElementById('activity-intensity').value = this.value;
+                });
+            });
+            
+            // Create a hidden input to store the intensity value (for compatibility with existing code)
+            const intensityInput = document.createElement('input');
+            intensityInput.type = 'hidden';
+            intensityInput.id = 'activity-intensity';
+            intensityInput.value = 'moderate'; // Default value
+            document.getElementById('activity-simulation').appendChild(intensityInput);
+            
+            document.getElementById('run-simulation-btn').addEventListener('click', runActivitySimulation);
+        }
+        
+        // Function to select an activity from quick select options
+        function selectActivity(activityName) {
+            const activitySelect = document.getElementById('activity-type');
+            activitySelect.value = activityName;
+            // Trigger a change event to update any dependent UI
+            activitySelect.dispatchEvent(new Event('change'));
+        }
+        
+        // Run activity simulation
+        function runActivitySimulation() {
+            const activityType = document.getElementById('activity-type').value;
+            const intensity = document.getElementById('activity-intensity').value;
+            const duration = parseInt(document.getElementById('activity-duration').value);
+            
+            if (!activityType) {
+                alert('Please select an activity first');
+                return;
+            }
+            
+            // Find the selected activity
+            const activity = activityOptions.find(a => a.name === activityType);
+            if (!activity) return;
+            
+            // Generate simulated impact based on activity and intensity
+            const impacts = [];
+            let totalRisk = 0;
+            
+            // Intensity multiplier - more realistic values
+            const intensityMultiplier = intensity === 'high' ? 1.3 : intensity === 'low' ? 0.8 : 1;
+            
+            // Duration multiplier with diminishing returns - more realistic for longer durations
+            const durationMultiplier = Math.min(1.5, Math.sqrt(duration / 30));
+            
+            // Mapping from activity impacted areas to body part IDs
+            const areaToBodyPartMapping = {
+                'knees': ['rightLeg', 'leftLeg'],
+                'ankles': ['rightAnkle', 'leftAnkle'],
+                'shins': ['rightShin', 'leftShin'],
+                'achilles': ['rightAchilles', 'leftAchilles'],
+                'shoulders': ['rightShoulder', 'leftShoulder'],
+                'back': ['back'],
+                'wrists': ['rightWrist', 'leftWrist'],
+                'elbows': ['rightElbow', 'leftElbow'],
+                'hips': ['rightHip', 'leftHip'],
+                'groin': ['groin'],
+                'feet': ['rightFoot', 'leftFoot']
+            };
+            
+            // Check for existing injuries that might be affected by this activity
+            const existingInjuries = [];
+            
+            activity.impactedAreas.forEach(area => {
+                const bodyPartIds = areaToBodyPartMapping[area] || [];
+                
+                bodyPartIds.forEach(partId => {
+                    const part = bodyPartsData.find(p => p.id === partId);
+                    if (part && part.percentHealthy < 100) {
+                        existingInjuries.push({
+                            area: area,
+                            part: part,
+                            percentHealthy: part.percentHealthy,
+                            injuryType: part.injuryType,
+                            healingStatus: part.healingStatus
+                        });
+                    }
+                });
+            });
+            
+            // Apply to each impacted area with varying impact factors per area
+            activity.impactedAreas.forEach(area => {
+                const baseImpact = activity.riskLevel;
+                
+                // Different areas get different impact factors for more realism
+                let areaImpactFactor = 1.0;
+                
+                // Adjust impact by body part - some activities impact certain parts more than others
+                if (activity.name === 'running') {
+                    if (area === 'knees') areaImpactFactor = 1.2;
+                    if (area === 'ankles') areaImpactFactor = 1.1;
+                    if (area === 'shins') areaImpactFactor = 1.3;
+                    if (area === 'achilles') areaImpactFactor = 1.2;
+                } 
+                else if (activity.name === 'basketball') {
+                    if (area === 'knees') areaImpactFactor = 1.2;
+                    if (area === 'ankles') areaImpactFactor = 1.3;
+                }
+                else if (activity.name === 'weightlifting') {
+                    if (area === 'shoulders') areaImpactFactor = 1.3;
+                    if (area === 'back') areaImpactFactor = 1.2;
+                }
+                else if (activity.name === 'tennis') {
+                    if (area === 'elbows') areaImpactFactor = 1.4;
+                    if (area === 'shoulders') areaImpactFactor = 1.2;
+                }
+                else if (activity.name === 'volleyball') {
+                    if (area === 'shoulders') areaImpactFactor = 1.5;
+                    if (area === 'wrists') areaImpactFactor = 1.2;
+                    if (area === 'knees') areaImpactFactor = 1.3;
+                    if (area === 'ankles') areaImpactFactor = 1.1;
+                }
+                
+                const adjustedImpact = Math.min(8, Math.round(baseImpact * intensityMultiplier * durationMultiplier * areaImpactFactor));
+                totalRisk += adjustedImpact;
+                
+                let recommendation = '';
+                if (adjustedImpact < 3) {
+                    recommendation = 'Low impact. Generally safe to proceed with normal activity.';
+                } else if (adjustedImpact < 6) {
+                    recommendation = 'Moderate impact. Consider reduced intensity or duration. Proper warm-up recommended.';
+                } else {
+                    recommendation = 'High impact. Caution advised. Consider alternative activities or consult with a healthcare provider.';
+                }
+                
+                impacts.push({
+                    bodyPart: area,
+                    impactLevel: adjustedImpact,
+                    recommendation
+                });
+                
+                // REMOVED: No longer updating the body parts in the map based on simulation
+                // updateBodyPartsFromSimulation(area, adjustedImpact, areaToBodyPartMapping);
+            });
+            
+            // Calculate overall risk (average of all impacts, weighted by the number of affected areas)
+            const overallRisk = Math.min(8, Math.round(totalRisk / activity.impactedAreas.length));
+            
+            // If there are existing injuries, increase the overall risk
+            let adjustedOverallRisk = overallRisk;
+            if (existingInjuries.length > 0) {
+                // Calculate average health percentage of existing injuries
+                const avgHealth = existingInjuries.reduce((sum, inj) => sum + inj.percentHealthy, 0) / existingInjuries.length;
+                
+                // Adjust overall risk based on existing injuries (lower health = higher risk)
+                // More realistic calculation - lower percentage increases risk more
+                const healthFactor = (100 - avgHealth) / 100; // 0 to 1, higher for worse health
+                adjustedOverallRisk = Math.min(8, Math.round(overallRisk + (overallRisk * healthFactor * 0.5)));
+            }
+            
+            // Display results with existing injury information
+            displaySimulationResults(impacts, adjustedOverallRisk, intensity, duration, existingInjuries);
+        }
+        
+        // Display simulation results
+        function displaySimulationResults(impacts, overallRisk, intensity, duration, existingInjuries) {
+            const resultsContainer = document.getElementById('simulation-results');
+            const recommendationsContainer = document.getElementById('activity-recommendations');
+            const activityName = document.getElementById('activity-type').options[document.getElementById('activity-type').selectedIndex].text;
+            
+            // Helper functions for styling and text
+            const getRiskColor = (risk) => {
+                if (risk < 3) return 'risk-low';
+                if (risk < 6) return 'risk-medium';
+                return 'risk-high';
+            };
+            
+            const getSeverityText = (risk) => {
+                if (risk < 3) return 'Low risk activity for your current condition.';
+                if (risk < 6) return 'Moderate risk. Proceed with caution.';
+                return 'High risk. Consider modifications or alternatives.';
+            };
+            
+            // Get projected health impacts
+            const projectedHealthImpacts = [];
+            impacts.forEach(impact => {
+                const relatedInjuries = existingInjuries.filter(inj => inj.area === impact.bodyPart);
+                if (relatedInjuries.length > 0) {
+                    relatedInjuries.forEach(inj => {
+                        const healthReduction = impact.impactLevel * 3;
+                        const projectedHealth = Math.max(0, inj.percentHealthy - healthReduction);
+                        projectedHealthImpacts.push({
+                            partId: inj.part.id,
+                            currentHealth: inj.percentHealthy,
+                            projectedHealth: Math.round(projectedHealth)
+                        });
+                    });
+                }
+            });
+            
+            // Temporarily show projected health on body map
+            applyProjectedHealthImpacts(projectedHealthImpacts);
+            
+            // Render results
+            resultsContainer.innerHTML = `
+                <div class="alert ${overallRisk < 3 ? 'alert-success' : overallRisk < 6 ? 'alert-warning' : 'alert-danger'} mb-3">
+                    <h5 class="alert-heading">Overall Risk: ${overallRisk}/8</h5>
+                    <p class="mb-0">${getSeverityText(overallRisk)}</p>
+                </div>
+                
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Activity Details</h5>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <strong>Activity:</strong> ${activityName}
+                            </div>
+                            <div class="col-md-4">
+                                <strong>Intensity:</strong> ${intensity.charAt(0).toUpperCase() + intensity.slice(1)}
+                            </div>
+                            <div class="col-md-4">
+                                <strong>Duration:</strong> ${duration} minutes
+                            </div>
+                        </div>
+                        
+                        <h6>Impacted Areas:</h6>
+                        <div class="list-group">
+                            ${impacts.map(impact => `
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <strong class="text-capitalize">${impact.bodyPart}</strong>
+                                        <span class="badge ${getRiskColor(impact.impactLevel)} text-white rounded px-2 py-1">
+                                            Impact: ${impact.impactLevel}/8
+                                        </span>
+                                    </div>
+                                    <small class="text-muted">${impact.recommendation}</small>
+                                    
+                                    ${(() => {
+                                        const relatedInjuries = existingInjuries.filter(inj => inj.area === impact.bodyPart);
+                                        if (relatedInjuries.length > 0) {
+                                            return `
+                                                <div class="mt-2 p-2 bg-light rounded">
+                                                    <small class="text-danger"><strong>⚠️ Note:</strong> You have existing injuries in this area.</small>
+                                                    <div>
+                                                        <small class="text-danger">Projected health after activity: ${relatedInjuries.map(inj => {
+                                                            // Calculate projected health after activity
+                                                            const healthReduction = impact.impactLevel * 3;
+                                                            const projectedHealth = Math.max(0, inj.percentHealthy - healthReduction);
+                                                            return `${inj.part.name}: ${Math.round(projectedHealth)}%`;
+                                                        }).join(', ')}</small>
+                                                    </div>
+                                                </div>
+                                            `;
+                                        }
+                                        return '';
+                                    })()}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+                
+                ${existingInjuries.length > 0 ? `
+                <div class="alert alert-warning mb-3">
+                    <h5 class="alert-heading">Existing Injuries</h5>
+                    <p>The simulation detected ${existingInjuries.length} existing injuries that could be affected by this activity.</p>
+                    <ul class="mb-0">
+                        ${existingInjuries.map(inj => `
+                            <li>${inj.part.name} (${inj.percentHealthy}% healthy - ${inj.healingStatus})</li>
+                        `).join('')}
+                    </ul>
+                </div>
+                ` : ''}
+
+                <div class="alert alert-info mb-3">
+                    <h5 class="alert-heading">Visualization Preview</h5>
+                    <p>The body map now shows how your body parts would be affected by this activity.</p>
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="restoreOriginalHealthValues()">
+                        <i class="fas fa-undo"></i> Restore Original Values
+                    </button>
+                    <button type="button" class="btn btn-danger btn-sm ms-2" onclick="applySimulationImpacts()">
+                        <i class="fas fa-exclamation-triangle"></i> Apply These Impacts
+                    </button>
+                </div>
+            `;
+            
+            // Generate recommendations
+            recommendationsContainer.innerHTML = `
+                <ul class="list-group mb-3">
+                    ${overallRisk >= 6 ? `
+                        <li class="list-group-item">
+                            <strong>Consider Lower Impact Alternatives</strong><br>
+                            Based on your current condition, you might want to choose activities with lower impact on affected body parts.
+                        </li>
+                    ` : ''}
+                    
+                    ${existingInjuries.length > 0 ? `
+                        <li class="list-group-item">
+                            <strong>Modify Activity for Existing Injuries</strong><br>
+                            ${existingInjuries.some(inj => inj.percentHealthy < 50) ? 
+                                `Your injuries are significant. Consider rest or very low-impact alternatives.` :
+                                `Reduce intensity or duration to accommodate your current injuries.`}
+                        </li>
+                    ` : ''}
+                    
+                    <li class="list-group-item">
+                        <strong>Warm-Up Thoroughly</strong><br>
+                        A proper warm-up can reduce risk of injury or re-injury.
+                    </li>
+                    
+                    <li class="list-group-item">
+                        <strong>Adjust Based on Pain</strong><br>
+                        Stop or modify the activity if you experience pain beyond normal discomfort.
+                    </li>
+                </ul>
+            `;
+            
+            // Log this simulation to history
+            const newEntry = {
+                id: historyEntries.length + 1,
+                date: new Date().toISOString().split('T')[0],
+                type: 'activity-simulation',
+                title: `${activityName} Simulation`,
+                notes: `Simulated ${activityName} at ${intensity} intensity for ${duration} minutes. Overall risk: ${overallRisk}/8.${existingInjuries.length > 0 ? ' Included analysis of existing injuries.' : ''}`
+            };
+            historyEntries.unshift(newEntry); // Add to beginning of array
+            
+            // If the history tab has been initialized, update it
+            if (document.getElementById('history-entries').childElementCount > 0) {
+                renderHistoryEntries();
+            }
+
+            // Show body map tab to see the projected impacts
+            showBodyMapTab();
+        }
+
+        // Apply projected health impacts to body map temporarily
+        function applyProjectedHealthImpacts(projectedImpacts) {
+            // Store original values for restoration
+            if (!window.originalBodyPartValues) {
+                window.originalBodyPartValues = bodyPartsData.map(part => ({
+                    id: part.id,
+                    percentHealthy: part.percentHealthy,
+                    injuryType: part.injuryType,
+                    healingStatus: part.healingStatus
+                }));
+            }
+            
+            // Apply projected health values
+            projectedImpacts.forEach(impact => {
+                const element = document.getElementById(impact.partId);
+                const bodyPart = bodyPartsData.find(part => part.id === impact.partId);
+                
+                if (element && bodyPart) {
+                    // Update the data structure temporarily with projected values
+                    bodyPart.projectedHealth = impact.projectedHealth;
+                    
+                    // Update the visual appearance based on projected health
+                    if (element.tagName === 'path') {
+                        if (element.getAttribute('fill') === 'none') {
+                            // For stroke-based parts
+                            element.setAttribute('stroke', getPartColor(impact.partId, true));
+                            element.setAttribute('data-projected', 'true');
+                        } else {
+                            // For fill-based parts
+                            const roundedPercent = Math.round(impact.projectedHealth / 10) * 10;
+                            
+                            // Remove existing health-percent classes
+                            Array.from(element.classList).forEach(cls => {
+                                if (cls.startsWith('health-percent-')) {
+                                    element.classList.remove(cls);
+                                }
+                            });
+                            
+                            // Add projected health class
+                            element.classList.add(`health-percent-${roundedPercent}`);
+                            element.setAttribute('data-projected', 'true');
+                        }
+                    }
+                }
+            });
+            
+            // Add a "Projected" badge to the body map container
+            const bodyMapContainer = document.getElementById('body-map-container');
+            let projectionBadge = document.getElementById('projection-badge');
+            
+            if (!projectionBadge) {
+                projectionBadge = document.createElement('div');
+                projectionBadge.id = 'projection-badge';
+                projectionBadge.className = 'badge bg-warning text-dark position-absolute top-0 end-0 m-2';
+                projectionBadge.style.zIndex = '1000';
+                projectionBadge.innerHTML = '<i class="fas fa-chart-line me-1"></i> Showing Projected Health';
+                bodyMapContainer.appendChild(projectionBadge);
+            }
+        }
+        
+        // Restore original health values
+        function restoreOriginalHealthValues() {
+            if (window.originalBodyPartValues) {
+                // Restore original values in data structure
+                window.originalBodyPartValues.forEach(original => {
+                    const bodyPart = bodyPartsData.find(part => part.id === original.id);
+                    if (bodyPart) {
+                        delete bodyPart.projectedHealth;
+                    }
+                });
+                
+                // Update visual representation
+                updateBodyMapDisplay();
+                
+                // Remove the projection badge
+                const projectionBadge = document.getElementById('projection-badge');
+                if (projectionBadge) {
+                    projectionBadge.remove();
+                }
+                
+                // Clean up elements with data-projected attribute
+                document.querySelectorAll('[data-projected]').forEach(element => {
+                    element.removeAttribute('data-projected');
+                });
+                
+                // Notify user
+                console.log('Original health values restored');
+            }
+        }
+        
+        // Apply simulation impacts permanently
+        function applySimulationImpacts() {
+            if (confirm('Are you sure you want to apply these injury impacts? This will update your body map with the projected health values.')) {
+                const projectedElements = document.querySelectorAll('[data-projected]');
+                
+                projectedElements.forEach(element => {
+                    const partId = element.id;
+                    const bodyPart = bodyPartsData.find(part => part.id === partId);
+                    
+                    if (bodyPart && bodyPart.projectedHealth !== undefined) {
+                        // Create entry in history before changing
+                        saveBodyPartUpdate(bodyPart, bodyPart.projectedHealth, bodyPart.injuryType, 
+                                          determineHealingStatus(bodyPart.projectedHealth), 
+                                          'Injury from simulated activity');
+                        
+                        // Update the body part's health
+                        bodyPart.percentHealthy = bodyPart.projectedHealth;
+                        bodyPart.healingStatus = determineHealingStatus(bodyPart.projectedHealth);
+                        
+                        if (bodyPart.percentHealthy < 80 && bodyPart.injuryType === 'none') {
+                            bodyPart.injuryType = bodyPart.percentHealthy < 50 ? 'strain' : 'soreness';
+                        }
+                        
+                        delete bodyPart.projectedHealth;
+                    }
+                    
+                    element.removeAttribute('data-projected');
+                });
+                
+                // Remove the projection badge
+                const projectionBadge = document.getElementById('projection-badge');
+                if (projectionBadge) {
+                    projectionBadge.remove();
+                }
+                
+                // Update the body map
+                updateBodyMapDisplay();
+                
+                // Clear original values
+                window.originalBodyPartValues = null;
+                
+                // Add a history entry about applying simulation impacts
+                const activityName = document.getElementById('activity-type').options[document.getElementById('activity-type').selectedIndex].text;
+                const newEntry = {
+                    id: historyEntries.length + 1,
+                    date: new Date().toISOString().split('T')[0],
+                    type: 'injury-update',
+                    title: `Applied ${activityName} Impacts`,
+                    notes: `Applied simulated impacts 
+                    from ${activityName} activity to body health values.`
+                };
+                historyEntries.unshift(newEntry);
+                renderHistoryEntries();
+                
+                alert('Simulation impacts have been applied to your body map.');
+            }
+        }
+        
+        // Helper function to determine healing status based on health percentage
+        function determineHealingStatus(health) {
+            if (health >= 90) return 'Healthy';
+            if (health >= 70) return 'Minor discomfort';
+            if (health >= 50) return 'Moderate discomfort';
+            if (health >= 30) return 'Recovering';
+            return 'Significant injury - needs rest';
+        }
+        
+        // Update body map display based on current health values
+        function updateBodyMapDisplay() {
+            document.querySelectorAll('[id].body-part, [id] path').forEach(element => {
+                const partId = element.id;
+                const bodyPart = bodyPartsData.find(part => part.id === partId);
+                
+                if (bodyPart) {
+                    // For path elements with no fill
+                    if (element.tagName === 'path') {
+                        if (element.getAttribute('fill') === 'none') {
+                            element.setAttribute('stroke', getPartColor(partId));
+                        } else {
+                            // For elements with fill, update the health-percent class
+                            const roundedPercent = Math.round(bodyPart.percentHealthy / 10) * 10;
+                            
+                            // Remove existing health-percent classes
+                            Array.from(element.classList).forEach(cls => {
+                                if (cls.startsWith('health-percent-')) {
+                                    element.classList.remove(cls);
+                                }
+                            });
+                            
+                            // Add current health class
+                            element.classList.add(`health-percent-${roundedPercent}`);
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Helper function to get part color (for paths) - with optional projected parameter
+        function getPartColor(partId, useProjected = false) {
+            const part = bodyPartsData.find(p => p.id === partId);
+            if (!part) return '#4caf50'; // Default healthy green
+            
+            // Use projected health if available and requested
+            const health = (useProjected && part.projectedHealth !== undefined) ? part.projectedHealth : part.percentHealthy;
+            
+            if (health >= 90) return '#4caf50'; // Green (healthy)
+            if (health >= 70) return '#8bc34a'; // Light green
+            if (health >= 50) return '#ffeb3b'; // Yellow
+            if (health >= 30) return '#ff9800'; // Orange
+            return '#f44336'; // Red (unhealthy)
+        }
+        
+        // ---------- HISTORY LOG FUNCTIONALITY ----------
+        
+        // Initialize history log
+        function initHistoryLog() {
+            renderHistoryEntries();
+            
+            document.getElementById('add-entry-btn').addEventListener('click', function() {
+                document.getElementById('new-entry-form').style.display = 'block';
+                
+                // Set today's date as default
+                document.getElementById('entry-date').value = new Date().toISOString().split('T')[0];
+            });
+            
+            document.getElementById('cancel-entry-btn').addEventListener('click', function() {
+                document.getElementById('new-entry-form').style.display = 'none';
+            });
+            
+            document.getElementById('save-entry-btn').addEventListener('click', saveNewHistoryEntry);
+        }
+        
+        // Render history entries
+        function renderHistoryEntries() {
+            const entriesContainer = document.getElementById('history-entries');
+            entriesContainer.innerHTML = '';
+            
+            if (historyEntries.length === 0) {
+                entriesContainer.innerHTML = '<p class="text-muted">No entries yet. Add your first health record.</p>';
+                return;
+            }
+            
+            historyEntries.forEach(entry => {
+                const entryElement = document.createElement('div');
+                entryElement.className = 'history-entry mb-3';
+                
+                // Set color based on entry type
+                let typeColor = '';
+                let typeIcon = '';
+                
+                switch (entry.type) {
+                    case 'pain-update':
+                        typeColor = 'border-danger';
+                        typeIcon = '🔴';
+                        break;
+                    case 'recovery-progress':
+                        typeColor = 'border-success';
+                        typeIcon = '📈';
+                        break;
+                    case 'therapy-session':
+                        typeColor = 'border-primary';
+                        typeIcon = '🏋️';
+                        break;
+                    case 'medical-visit':
+                        typeColor = 'border-info';
+                        typeIcon = '👨‍⚕️';
+                        break;
+                    case 'medication':
+                        typeColor = 'border-warning';
+                        typeIcon = '💊';
+                        break;
+                    case 'activity-simulation':
+                        typeColor = 'border-secondary';
+                        typeIcon = '🏃';
+                        break;
+                    default:
+                        typeColor = 'border-secondary';
+                        typeIcon = '📝';
+                }
+                
+                entryElement.classList.add(typeColor);
+                
+                // Format date
+                const date = new Date(entry.date);
+                const formattedDate = date.toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric' 
+                });
+                
+                entryElement.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <span class="badge bg-secondary mb-1">${typeIcon} ${entry.type.replace('-', ' ').split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}</span>
+                            <h5 class="mb-1">${entry.title}</h5>
+                        </div>
+                        <small class="text-muted">${formattedDate}</small>
+                    </div>
+                    <p class="mb-0">${entry.notes}</p>
+                `;
+                
+                entriesContainer.appendChild(entryElement);
+            });
+        }
+        
+        // Save new history entry
+        function saveNewHistoryEntry() {
+            const date = document.getElementById('entry-date').value;
+            const type = document.getElementById('entry-type').value;
+            const title = document.getElementById('entry-title').value;
+            const notes = document.getElementById('entry-notes').value;
+            
+            if (!title || !notes) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            const newEntry = {
+                id: historyEntries.length + 1,
+                date,
+                type,
+                title,
+                notes
+            };
+            
+            historyEntries.unshift(newEntry); // Add to beginning of array
+            renderHistoryEntries();
+            
+            // Reset form and hide
+            document.getElementById('entry-title').value = '';
+            document.getElementById('entry-notes').value = '';
+            document.getElementById('new-entry-form').style.display = 'none';
+        }
+        
+        // ---------- CHATBOT FUNCTIONALITY ----------
+        
+        // Initialize chatbot
+        function initChatbot() {
+            document.getElementById('send-message-btn').addEventListener('click', sendChatMessage);
+            document.getElementById('chat-input').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendChatMessage();
+                }
+            });
+            
+            // Suggested questions
+            document.querySelectorAll('.suggested-question').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.getElementById('chat-input').value = this.textContent.trim();
+                    sendChatMessage();
+                });
+            });
+            
+            // Add initial greeting from the trainer
+            setTimeout(() => {
+                addChatMessage(`Hello! I'm your personal Athletic Injury Prevention Advisor. I'm here to help with your injury prevention and recovery needs. How can I assist you today?`, 'bot');
+            }, 500);
+        }
+        
+        // Send chat message
+        function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // Add user message
+            addChatMessage(message, 'user');
+            
+            // Clear input
+            input.value = '';
+            
+            // Show thinking indicator
+            const messagesContainer = document.getElementById('chat-messages');
+            const thinkingElement = document.createElement('div');
+            thinkingElement.className = 'chat-message bot-message thinking';
+            thinkingElement.innerHTML = `<div class="thinking-dots"><span>.</span><span>.</span><span>.</span></div>`;
+            thinkingElement.id = 'thinking-indicator';
+            messagesContainer.appendChild(thinkingElement);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            // Call OpenAI API
+            fetchChatGPTResponse(message).then(response => {
+                // Remove thinking indicator
+                document.getElementById('thinking-indicator').remove();
+                
+                // Add response
+                addChatMessage(response, 'bot');
+            }).catch(error => {
+                // Remove thinking indicator
+                if (document.getElementById('thinking-indicator')) {
+                    document.getElementById('thinking-indicator').remove();
+                }
+                
+                // Add error message
+                addChatMessage("I'm sorry, I couldn't process your request at the moment. Please try again later.", 'bot');
+                console.error("Error calling OpenAI API:", error);
+            });
+        }
+        
+        // Add chat message to display
+        function addChatMessage(message, sender) {
+            const messagesContainer = document.getElementById('chat-messages');
+            const messageElement = document.createElement('div');
+            messageElement.className = `chat-message ${sender}-message`;
+            
+            // Add avatar and name for bot messages
+            if (sender === 'bot') {
+                messageElement.innerHTML = `
+                    <div class="mb-2 d-flex align-items-center">
+                        <i class="fas fa-robot me-2"></i>
+                        <strong>Athletic Injury Advisor</strong>
+                    </div>
+                    ${message}
+                `;
+            } else {
+                messageElement.innerHTML = message;
+            }
+            
+            messagesContainer.appendChild(messageElement);
+            
+            // Scroll to bottom
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        // Fetch response from OpenAI API
+        async function fetchChatGPTResponse(userMessage) {
+            const OPENAI_API_KEY = "";
+            
+            const SYSTEM_PROMPT = `You are an expert AI Athletic Injury Prevention Advisor. Your goal is to provide personalized advice based on the athlete's profile and predicted injury risks. 
+
+Athlete Profile: {"sport": "Volleyball", "height_cm": 190, "weight_kg": 82, "genetic_injury_proneness": 6.5, "daily_calories": 2800, "protein_g": 180, "carbs_g": 350, "fat_g": 80, "sleep_hours": 6.5, "daily_steps": 15000, "training_load": 8.5, "RPE": 9}
+
+Predicted Injury Risks (based on ML model): {Predicted Injury Type Probabilities for a Volleyball player: None: 0.7100 Shoulder Injury: 0.0700 Ankle Sprain: 0.0500 Knee Injury: 0.0300 Wrist Sprain: 0.0300 Achilles Tendonitis: 0.0200 Calf Strain: 0.0200 Concussion: 0.0200 Hamstring Strain: 0.0200 Elbow Tendonitis: 0.0100 Lower Back Pain: 0.0100 Shin Splints: 0.0100 Groin Strain: 0.0000 Hip Injury: 0.0000}
+
+Based on this information, answer the user's questions about injury prevention, suggest relevant exercises (stretching, strengthening), recovery strategies (sleep, nutrition, active recovery), and training load management. Be supportive, knowledgeable, and focus on actionable advice related to the identified risks and profile. Do not mention the underlying ML model probabilities unless specifically asked. Keep responses concise and helpful.`;
+            
+            try {
+                const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${OPENAI_API_KEY}`
+                    },
+                    body: JSON.stringify({
+                        model: "gpt-3.5-turbo",
+                        messages: [
+                            {
+                                role: "system",
+                                content: SYSTEM_PROMPT
+                            },
+                            {
+                                role: "user",
+                                content: userMessage
+                            }
+                        ],
+                        temperature: 0.7,
+                        max_tokens: 500
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API request failed with status ${response.status}`);
+                }
+                
+                const data = await response.json();
+                return data.choices[0].message.content.trim();
+            } catch (error) {
+                console.error("Error calling OpenAI API:", error);
+                return "I'm having trouble connecting to my knowledge base right now. Please try again in a moment.";
+            }
+        }
+        
+        // Add CSS for thinking indicator
+        function addThinkingIndicatorStyles() {
+            const style = document.createElement('style');
+            style.textContent = `
+                .thinking-dots {
+                    display: inline-flex;
+                }
+                
+                .thinking-dots span {
+                    animation: thinking 1.4s infinite;
+                    font-size: 20px;
+                    line-height: 20px;
+                }
+                
+                .thinking-dots span:nth-child(2) {
+                    animation-delay: 0.2s;
+                }
+                
+                .thinking-dots span:nth-child(3) {
+                    animation-delay: 0.4s;
+                }
+                
+                @keyframes thinking {
+                    0%, 60%, 100% {
+                        transform: translateY(0);
+                        opacity: 0.6;
+                    }
+                    30% {
+                        transform: translateY(-8px);
+                        opacity: 1;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        // ---------- INITIALIZATION ----------
+        
+        // Initialize all components when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            // Create the body map
+            createBodyMap();
+            
+            // Initialize other components
+            initActivitySimulation();
+            initHistoryLog();
+            initChatbot();
+            addThinkingIndicatorStyles();
+            
+            // Set today's date for the new entry form
+            if (document.getElementById('entry-date')) {
+                document.getElementById('entry-date').value = new Date().toISOString().split('T')[0];
+            }
+            
+            // Add event listener for clear injuries button
+            document.getElementById('clear-injuries-btn').addEventListener('click', clearAllInjuries);
+            
+            // Add event listeners for WHOOP connect buttons
+            document.querySelectorAll('.whoop-connect-btn').forEach(btn => {
+                btn.addEventListener('click', connectWhoop);
+            });
+            
+            // Add other event listeners for profile interaction
+            document.querySelectorAll('.activity-pill').forEach(pill => {
+                pill.addEventListener('click', function() {
+                    const activity = this.textContent.trim().toLowerCase();
+                    selectActivity(activity.replace(/[^a-zA-Z0-9]/g, ''));
+                });
+            });
+        });
+        
+        // Function to select activity from suggestion pills
+        function selectActivity(activity) {
+            const activitySelect = document.getElementById('activity-type');
+            activitySelect.value = activity;
+            
+            // Highlight the selected pill
+            document.querySelectorAll('.activity-pill').forEach(pill => {
+                pill.classList.remove('active');
+                if (pill.textContent.toLowerCase().includes(activity)) {
+                    pill.classList.add('active');
+                }
+            });
+        }
+        
+        // Whoop integration placeholder function
+        function connectWhoop() {
+            // This would normally redirect to Whoop OAuth
+            alert('In a real implementation, this would redirect to WHOOP OAuth for authorization.');
+            
+            // Show a success message for the demot
+            setTimeout(() => {
+                // Update UI to show connected state
+                document.querySelectorAll('.whoop-connect-btn').forEach(btn => {
+                    btn.innerHTML = '<i class="fas fa-check-circle"></i> Connected';
+                    btn.classList.add('btn-success');
+                    btn.classList.remove('whoop-connect-btn');
+                });
+                
+                // Update progress bars with mock data
+                document.querySelectorAll('.progress-bar').forEach(bar => {
+                    const randomValue = Math.floor(Math.random() * 41) + 60; // 60-100
+                    bar.style.width = `${randomValue}%`;
+                    bar.setAttribute('aria-valuenow', randomValue);
+                    bar.textContent = `${randomValue}%`;
+                });
+                
+                // Add to history log
+                const newEntry = {
+                    id: historyEntries.length + 1,
+                    date: new Date().toISOString().split('T')[0],
+                    type: 'integration',
+                    title: 'WHOOP Connected',
+                    notes: 'Successfully connected WHOOP account. Recovery data now available in profile.'
+                };
+                historyEntries.unshift(newEntry);
+                
+                if (document.getElementById('history-entries').childElementCount > 0) {
+                    renderHistoryEntries();
+                }
+            }, 1500);
+        }
+        
+        // Save an update to body part health with tracking history
+        function saveBodyPartUpdate(partId, healthPercent, injuryType, healingStatus) {
+            const part = bodyPartsData.find(p => p.id === partId);
+            if (!part) return;
+            
+            // Create a snapshot for daily tracking
+            const today = new Date().toISOString().split('T')[0];
+            
+            // Initialize history for this body part if it doesn't exist
+            if (!bodyPartHistoryData[partId]) {
+                bodyPartHistoryData[partId] = [];
+            }
+            
+            // Only add to history if there's a change or it's a new day
+            const prevRecord = bodyPartHistoryData[partId].length > 0 ? 
+                bodyPartHistoryData[partId][0] : null;
+            
+            if (!prevRecord || 
+                prevRecord.date !== today || 
+                prevRecord.percentHealthy !== healthPercent ||
+                prevRecord.injuryType !== injuryType ||
+                prevRecord.healingStatus !== healingStatus) {
+                
+                // Add new history record
+                bodyPartHistoryData[partId].unshift({
+                    date: today,
+                    percentHealthy: healthPercent,
+                    injuryType: injuryType,
+                    healingStatus: healingStatus,
+                    previousPercent: part.percentHealthy
+                });
+                
+                // Limit history to last 30 entries per body part
+                if (bodyPartHistoryData[partId].length > 30) {
+                    bodyPartHistoryData[partId].pop();
+                }
+            }
+            
+            // Update current data
+            part.percentHealthy = healthPercent;
+            part.injuryType = injuryType;
+            part.healingStatus = healingStatus;
+            
+            // Update visual
+            updateBodyPartVisual(partId);
+            
+            // Create a history entry for significant changes (more than 10%)
+            if (Math.abs(healthPercent - (prevRecord ? prevRecord.previousPercent : 100)) >= 10) {
+                const changeType = healthPercent > (prevRecord ? prevRecord.previousPercent : 100) ? 'Improved' : 'Worsened';
+                const newEntry = {
+                    id: historyEntries.length + 1,
+                    date: today,
+                    type: 'health-change',
+                    title: `${part.name} ${changeType}`,
+                    notes: `${part.name} ${changeType.toLowerCase()} from ${prevRecord ? prevRecord.previousPercent : 100}% to ${healthPercent}% healthy. Injury type: ${injuryType}. Status: ${healingStatus}.`
+                };
+                historyEntries.unshift(newEntry);
+                
+                // Update history entries if the tab has been initialized
+                if (document.getElementById('history-entries').childElementCount > 0) {
+                    renderHistoryEntries();
+                }
+            }
+            
+            // Close the details panel
+            resetBodyPartDetailsPanel();
+        }
+        
+        // Update the visual representation of a body part
+        function updateBodyPartVisual(partId) {
+            const element = document.getElementById(partId);
+            if (element) {
+                // Remove all health percent classes
+                for (let i = 0; i <= 100; i += 10) {
+                    element.classList.remove(`health-percent-${i}`);
+                }
+                
+                const part = bodyPartsData.find(p => p.id === partId);
+                if (part) {
+                    // Add the new health percent class (rounded to nearest 10)
+                    const roundedPercent = Math.round(part.percentHealthy / 10) * 10;
+                    element.classList.add(`health-percent-${roundedPercent}`);
+                    
+                    // For elements that use stroke instead of fill
+                    if (element.tagName === 'path' && !element.getAttribute('fill')) {
+                        element.setAttribute('stroke', getPartColor(partId));
+                    }
+                }
+            }
+        }
+        
+        // Update History Log tab with new "Injury Tracking" section
+        function initHistoryLog() {
+            document.getElementById('add-entry-btn').addEventListener('click', function() {
+                document.getElementById('new-entry-form').style.display = 'block';
+                document.getElementById('history-entries').style.display = 'none';
+                document.getElementById('injury-tracking-section').style.display = 'none';
+                document.getElementById('add-entry-btn').style.display = 'none';
+                document.getElementById('view-tracking-btn').style.display = 'none';
+                document.getElementById('entry-date').valueAsDate = new Date();
+            });
+            
+            document.getElementById('cancel-entry-btn').addEventListener('click', function() {
+                document.getElementById('new-entry-form').style.display = 'none';
+                document.getElementById('history-entries').style.display = 'block';
+                document.getElementById('injury-tracking-section').style.display = 'none';
+                document.getElementById('add-entry-btn').style.display = 'inline-block';
+                document.getElementById('view-tracking-btn').style.display = 'inline-block';
+            });
+            
+            document.getElementById('save-entry-btn').addEventListener('click', function() {
+                const date = document.getElementById('entry-date').value;
+                const type = document.getElementById('entry-type').value;
+                const title = document.getElementById('entry-title').value;
+                const notes = document.getElementById('entry-notes').value;
+                
+                if (!title) {
+                    alert('Please add a title for your entry');
+                    return;
+                }
+                
+                // Create new entry
+                const newEntry = {
+                    id: historyEntries.length + 1,
+                    date,
+                    type,
+                    title,
+                    notes
+                };
+                
+                // Add to history entries
+                historyEntries.unshift(newEntry);
+                renderHistoryEntries();
+                
+                // Reset form and show history entries
+                document.getElementById('entry-title').value = '';
+                document.getElementById('entry-notes').value = '';
+                document.getElementById('new-entry-form').style.display = 'none';
+                document.getElementById('history-entries').style.display = 'block';
+                document.getElementById('injury-tracking-section').style.display = 'none';
+                document.getElementById('add-entry-btn').style.display = 'inline-block';
+                document.getElementById('view-tracking-btn').style.display = 'inline-block';
+            });
+            
+            document.getElementById('view-tracking-btn').addEventListener('click', function() {
+                document.getElementById('history-entries').style.display = 'none';
+                document.getElementById('new-entry-form').style.display = 'none';
+                document.getElementById('injury-tracking-section').style.display = 'block';
+                renderInjuryTrackingView();
+            });
+            
+            document.getElementById('back-to-history-btn').addEventListener('click', function() {
+                document.getElementById('history-entries').style.display = 'block';
+                document.getElementById('injury-tracking-section').style.display = 'none';
+            });
+            
+            renderHistoryEntries();
+        }
+        
+        // Render the injury tracking view
+        function renderInjuryTrackingView() {
+            const container = document.getElementById('injury-tracking-content');
+            container.innerHTML = '';
+            
+            // Get all body parts with injury history
+            const injuredParts = Object.keys(bodyPartHistoryData).filter(
+                partId => bodyPartHistoryData[partId].length > 0
+            );
+            
+            if (injuredParts.length === 0) {
+                container.innerHTML = `
+                    <div class="alert alert-info">
+                        <p class="mb-0">No injury tracking data available yet. Mark injuries on the body map to start tracking recovery progress.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Create a section for each injured body part
+            injuredParts.forEach(partId => {
+                const part = bodyPartsData.find(p => p.id === partId);
+                if (!part) return;
+                
+                const history = bodyPartHistoryData[partId];
+                
+                // Create a card for this body part
+                const card = document.createElement('div');
+                card.className = 'card mb-4';
+                
+                // Create the header with current status
+                const currentStatus = history[0];
+                const statusClass = currentStatus.percentHealthy < 50 ? 'danger' : 
+                    currentStatus.percentHealthy < 80 ? 'warning' : 'success';
+                
+                // Create chart data
+                const chartLabels = [];
+                const chartData = [];
+                
+                // Get up to 10 most recent entries, but in chronological order
+                const recentHistory = [...history].reverse().slice(0, 10);
+                
+                recentHistory.forEach(entry => {
+                    chartLabels.push(entry.date);
+                    chartData.push(entry.percentHealthy);
+                });
+                
+                card.innerHTML = `
+                    <div class="card-header bg-${statusClass} text-white">
+                        <h5 class="card-title mb-0">${part.name}</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <span class="badge bg-${statusClass} mb-2">Current: ${currentStatus.percentHealthy}% Healthy</span>
+                                <p class="mb-0"><strong>Status:</strong> ${currentStatus.healingStatus}</p>
+                                <p class="mb-0"><strong>Injury Type:</strong> ${currentStatus.injuryType}</p>
+                                <p class="mb-0"><strong>Last Updated:</strong> ${currentStatus.date}</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="progress" style="width: 100px; height: 20px;">
+                                    <div class="progress-bar bg-${statusClass}" role="progressbar" 
+                                        style="width: ${currentStatus.percentHealthy}%" 
+                                        aria-valuenow="${currentStatus.percentHealthy}" 
+                                        aria-valuemin="0" 
+                                        aria-valuemax="100">
+                                        ${currentStatus.percentHealthy}%
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <h6 class="mt-4 mb-3">Recovery Progress</h6>
+                        <div style="height: 200px;">
+                            <canvas id="chart-${partId}"></canvas>
+                        </div>
+                        
+                        <h6 class="mt-4 mb-3">History Log</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Health %</th>
+                                        <th>Change</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${history.map((entry, idx) => {
+                                        const prevEntry = history[idx + 1];
+                                        const change = prevEntry ? 
+                                            entry.percentHealthy - prevEntry.percentHealthy : 
+                                            entry.percentHealthy - 100;
+                                        
+                                        const changeClass = change > 0 ? 'text-success' : 
+                                            change < 0 ? 'text-danger' : 'text-muted';
+                                        
+                                        const changeText = change > 0 ? `+${change}%` : 
+                                            change < 0 ? `${change}%` : 'No change';
+                                        
+                                        return `
+                                            <tr>
+                                                <td>${entry.date}</td>
+                                                <td>${entry.percentHealthy}%</td>
+                                                <td class="${changeClass}">${changeText}</td>
+                                                <td>${entry.healingStatus}</td>
+                                            </tr>
+                                        `;
+                                    }).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(card);
+                
+                // Create the chart after the card is added to the DOM
+                setTimeout(() => {
+                    const ctx = document.getElementById(`chart-${partId}`).getContext('2d');
+                    new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: chartLabels,
+                            datasets: [{
+                                label: 'Health Percentage',
+                                data: chartData,
+                                backgroundColor: 'rgba(66, 133, 244, 0.2)',
+                                borderColor: 'rgba(66, 133, 244, 1)',
+                                borderWidth: 2,
+                                tension: 0.2,
+                                fill: true
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    max: 100,
+                                    title: {
+                                        display: true,
+                                        text: 'Health Percentage'
+                                    }
+                                },
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: 'Date'
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }, 0);
+            });
+        }
+
+        // Function to switch to the body map tab
+        function showBodyMapTab() {
+            const bodyMapTab = document.getElementById('body-map-tab');
+            if (bodyMapTab) {
+                bodyMapTab.click();
+            }
+        }
+    </script>
+</body>
+</html> 
