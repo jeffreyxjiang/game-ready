@@ -5,7 +5,7 @@ import openai
 from main2 import predict_injury
 
 # Set your OpenAI API key
-openai.api_key = "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"
+openai.api_key = "your-openai-api-key-here"
 
 class AthleteAdvisorBot:
     def __init__(self):
