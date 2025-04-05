@@ -1,0 +1,379 @@
+import numpy as np
+import pandas as pd
+import random
+from datetime import datetime
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, classification_report
+from sklearn.preprocessing import LabelEncoder
+
+#np.random.seed(50)
+#random.seed(50)
+
+num_athletes = 5000
+days_per_athlete = 30
+start_date = pd.to_datetime("2025-01-01")
+dates = pd.date_range(start=start_date, periods=days_per_athlete)
+
+data = {
+    "athlete_id": [],
+    "date": [],
+    "sport": [],
+    "height_cm": [],
+    "weight_kg": [],
+    "genetic_injury_proneness": [],
+    "daily_calories": [],
+    "protein_g": [],
+    "carbs_g": [],
+    "fat_g": [],
+    "sleep_hours": [],
+    "daily_steps": [],
+    "training_load": [],
+    "RPE": [],
+    "injury_type": [],
+}
+
+# Updated injury types with body part specificity
+possible_injury_types = [
+    "None", 
+    "Ankle Sprain", 
+    "Knee Injury", 
+    "Hamstring Strain", 
+    "Calf Strain", 
+    "Shoulder Injury", 
+    "Wrist Sprain", 
+    "Lower Back Pain", 
+    "Hip Injury",
+    "Achilles Tendonitis",
+    "Shin Splints",
+    "Elbow Tendonitis",
+    "Concussion",
+    "Groin Strain"
+]
+
+# Define sports and their common injuries
+sports = ["Basketball", "Soccer", "Baseball", "Tennis", "Running", "Football", "Swimming", "Volleyball"]
+
+# Sport-specific injury probabilities (higher number = more likely)
+sport_injury_weights = {
+    "Basketball": {
+        "Ankle Sprain": 5, 
+        "Knee Injury": 4, 
+        "Hamstring Strain": 2,
+        "Calf Strain": 1,
+        "Shoulder Injury": 1,
+        "Wrist Sprain": 1,
+        "Lower Back Pain": 2,
+        "Hip Injury": 1,
+        "Achilles Tendonitis": 2,
+        "Shin Splints": 1,
+        "Elbow Tendonitis": 0.5,
+        "Concussion": 1,
+        "Groin Strain": 2
+    },
+    "Soccer": {
+        "Ankle Sprain": 4, 
+        "Knee Injury": 5, 
+        "Hamstring Strain": 5,
+        "Calf Strain": 3,
+        "Shoulder Injury": 0.5,
+        "Wrist Sprain": 0.5,
+        "Lower Back Pain": 1,
+        "Hip Injury": 2,
+        "Achilles Tendonitis": 3,
+        "Shin Splints": 4,
+        "Elbow Tendonitis": 0.2,
+        "Concussion": 2,
+        "Groin Strain": 4
+    },
+    "Baseball": {
+        "Ankle Sprain": 1, 
+        "Knee Injury": 2, 
+        "Hamstring Strain": 2,
+        "Calf Strain": 1,
+        "Shoulder Injury": 5,
+        "Wrist Sprain": 3,
+        "Lower Back Pain": 3,
+        "Hip Injury": 1,
+        "Achilles Tendonitis": 1,
+        "Shin Splints": 0.5,
+        "Elbow Tendonitis": 5,
+        "Concussion": 1,
+        "Groin Strain": 1
+    },
+    "Tennis": {
+        "Ankle Sprain": 2, 
+        "Knee Injury": 3, 
+        "Hamstring Strain": 2,
+        "Calf Strain": 2,
+        "Shoulder Injury": 4,
+        "Wrist Sprain": 4,
+        "Lower Back Pain": 3,
+        "Hip Injury": 1,
+        "Achilles Tendonitis": 2,
+        "Shin Splints": 1,
+        "Elbow Tendonitis": 5,
+        "Concussion": 0.2,
+        "Groin Strain": 1
+    },
+    "Running": {
+        "Ankle Sprain": 2, 
+        "Knee Injury": 5, 
+        "Hamstring Strain": 3,
+        "Calf Strain": 4,
+        "Shoulder Injury": 0.2,
+        "Wrist Sprain": 0.2,
+        "Lower Back Pain": 2,
+        "Hip Injury": 3,
+        "Achilles Tendonitis": 5,
+        "Shin Splints": 5,
+        "Elbow Tendonitis": 0.1,
+        "Concussion": 0.1,
+        "Groin Strain": 1
+    },
+    "Football": {
+        "Ankle Sprain": 4, 
+        "Knee Injury": 5, 
+        "Hamstring Strain": 4,
+        "Calf Strain": 3,
+        "Shoulder Injury": 4,
+        "Wrist Sprain": 2,
+        "Lower Back Pain": 3,
+        "Hip Injury": 2,
+        "Achilles Tendonitis": 2,
+        "Shin Splints": 2,
+        "Elbow Tendonitis": 1,
+        "Concussion": 5,
+        "Groin Strain": 3
+    },
+    "Swimming": {
+        "Ankle Sprain": 0.5, 
+        "Knee Injury": 1, 
+        "Hamstring Strain": 1,
+        "Calf Strain": 0.5,
+        "Shoulder Injury": 5,
+        "Wrist Sprain": 1,
+        "Lower Back Pain": 3,
+        "Hip Injury": 1,
+        "Achilles Tendonitis": 0.5,
+        "Shin Splints": 0.2,
+        "Elbow Tendonitis": 1,
+        "Concussion": 0.1,
+        "Groin Strain": 1
+    },
+    "Volleyball": {
+        "Ankle Sprain": 5, 
+        "Knee Injury": 4, 
+        "Hamstring Strain": 2,
+        "Calf Strain": 2,
+        "Shoulder Injury": 4,
+        "Wrist Sprain": 2,
+        "Lower Back Pain": 3,
+        "Hip Injury": 1,
+        "Achilles Tendonitis": 2,
+        "Shin Splints": 1,
+        "Elbow Tendonitis": 1,
+        "Concussion": 1,
+        "Groin Strain": 1
+    }
+}
+
+# Sport-specific height and weight ranges
+sport_body_metrics = {
+    "Basketball": {"height_range": (180, 215), "weight_range": (75, 110)},
+    "Soccer": {"height_range": (165, 190), "weight_range": (65, 85)},
+    "Baseball": {"height_range": (175, 195), "weight_range": (75, 100)},
+    "Tennis": {"height_range": (170, 195), "weight_range": (65, 90)},
+    "Running": {"height_range": (165, 185), "weight_range": (55, 75)},
+    "Football": {"height_range": (175, 200), "weight_range": (80, 120)},
+    "Swimming": {"height_range": (175, 200), "weight_range": (70, 90)},
+    "Volleyball": {"height_range": (180, 205), "weight_range": (70, 95)}
+}
+
+for athlete in range(1, num_athletes + 1):
+    # Assign a sport to each athlete
+    sport = random.choice(sports)
+    
+    # Assign height and weight based on sport
+    height_range = sport_body_metrics[sport]["height_range"]
+    weight_range = sport_body_metrics[sport]["weight_range"]
+    
+    height_cm = round(np.random.uniform(height_range[0], height_range[1]), 1)
+    weight_kg = round(np.random.uniform(weight_range[0], weight_range[1]), 1)
+    
+    # Assign genetic injury proneness (1-10 scale, where 10 is most prone to injuries)
+    genetic_injury_proneness = round(np.random.uniform(1, 10), 1)
+    
+    for day in dates:
+        # Adjust calorie intake based on sport, weight, and height
+        base_calories = 2000
+        sport_factor = 500 if sport in ["Football", "Swimming", "Basketball"] else 300
+        weight_factor = weight_kg * 5
+        height_factor = height_cm * 0.5
+        
+        daily_calories = np.random.randint(
+            int(base_calories + weight_factor + height_factor - sport_factor),
+            int(base_calories + weight_factor + height_factor + sport_factor)
+        )
+            
+        protein_g = np.random.randint(int(weight_kg * 1.2), int(weight_kg * 2.2))
+        carbs_g = np.random.randint(200, 400)
+        fat_g = np.random.randint(50, 120)
+        sleep_hours = round(np.random.uniform(5.0, 9.0), 1)
+        
+        # Adjust steps based on sport
+        if sport in ["Running", "Soccer"]:
+            daily_steps = np.random.randint(8000, 25000)
+        elif sport in ["Swimming"]:
+            daily_steps = np.random.randint(2000, 12000)
+        else:
+            daily_steps = np.random.randint(4000, 18000)
+            
+        training_load = round(np.random.uniform(0, 10), 2)
+        RPE = np.random.randint(1, 11)
+        
+        # Calculate injury probability with new factors
+        base_prob = 0.03
+        load_factor = 0.01 * training_load
+        rpe_factor = 0.005 * RPE
+        sleep_factor = -0.005 * (sleep_hours - 7)
+        
+        # Add genetic factor
+        genetic_factor = 0.005 * genetic_injury_proneness
+        
+        # Add BMI factor (higher or lower than ideal range increases risk)
+        bmi = weight_kg / ((height_cm/100) ** 2)
+        bmi_factor = 0.005 * abs(bmi - 22)  # 22 is considered "ideal" BMI
+        
+        injury_probability = base_prob + load_factor + rpe_factor + sleep_factor + genetic_factor + bmi_factor
+        injury_probability = max(0, min(injury_probability, 0.7))  # Cap at 70% chance
+        
+        injury_occurred = np.random.rand() < injury_probability
+        
+        if injury_occurred:
+            # Get sport-specific injury weights
+            weights = sport_injury_weights[sport]
+            injury_types = list(weights.keys())
+            injury_weights = [weights[injury] for injury in injury_types]
+            
+            # Normalize weights to probabilities
+            total_weight = sum(injury_weights)
+            injury_probs = [w/total_weight for w in injury_weights]
+            
+            # Choose injury based on sport-specific probabilities
+            injury_type = np.random.choice(injury_types, p=injury_probs)
+        else:
+            injury_type = "None"
+            
+        data["athlete_id"].append(athlete)
+        data["date"].append(day)
+        data["sport"].append(sport)
+        data["height_cm"].append(height_cm)
+        data["weight_kg"].append(weight_kg)
+        data["genetic_injury_proneness"].append(genetic_injury_proneness)
+        data["daily_calories"].append(daily_calories)
+        data["protein_g"].append(protein_g)
+        data["carbs_g"].append(carbs_g)
+        data["fat_g"].append(fat_g)
+        data["sleep_hours"].append(sleep_hours)
+        data["daily_steps"].append(daily_steps)
+        data["training_load"].append(training_load)
+        data["RPE"].append(RPE)
+        data["injury_type"].append(injury_type)
+
+df = pd.DataFrame(data)
+print("Dataset shape:", df.shape)
+print(df.head(10))
+
+# Include all features
+features = ["sport", "height_cm", "weight_kg", "genetic_injury_proneness", 
+            "daily_calories", "protein_g", "carbs_g", "fat_g", 
+            "sleep_hours", "daily_steps", "training_load", "RPE"]
+target = "injury_type"
+
+# One-hot encode the sport feature
+df_encoded = pd.get_dummies(df, columns=["sport"])
+
+# Get the encoded feature names
+sport_features = [col for col in df_encoded.columns if col.startswith("sport_")]
+numeric_features = ["height_cm", "weight_kg", "genetic_injury_proneness", 
+                   "daily_calories", "protein_g", "carbs_g", "fat_g", 
+                   "sleep_hours", "daily_steps", "training_load", "RPE"]
+all_features = sport_features + numeric_features
+
+X = df_encoded[all_features]
+y = df[target]
+
+le = LabelEncoder()
+y_encoded = le.fit_transform(y)
+
+X_train, X_test, y_train, y_test = train_test_split(X, y_encoded, test_size=0.2, random_state=42)
+
+model = RandomForestClassifier(n_estimators=100, random_state=42)
+model.fit(X_train, y_train)
+
+y_pred = model.predict(X_test)
+accuracy = accuracy_score(y_test, y_pred)
+print("\nModel Evaluation:")
+print("Accuracy:", accuracy)
+print("\nClassification Report:")
+
+# Fix for potential class mismatch in classification report
+unique_classes = np.unique(y_test)
+target_names = le.inverse_transform(unique_classes)
+print(classification_report(y_test, y_pred, target_names=target_names))
+
+# Get feature importances
+importances = model.feature_importances_
+feature_importance_df = pd.DataFrame({"feature": all_features, "importance": importances}).sort_values(by="importance", ascending=False)
+print("\nFeature Importances:")
+print(feature_importance_df)
+
+def predict_injury(user_input: dict) -> dict:
+    # Create a DataFrame with the user input
+    user_df = pd.DataFrame([user_input])
+    
+    # One-hot encode the sport
+    if "sport" in user_input:
+        sport_columns = [f"sport_{s}" for s in sports]
+        for col in sport_columns:
+            user_df[col] = 0
+        user_df[f"sport_{user_input['sport']}"] = 1
+        
+        # Drop the original sport column
+        user_df = user_df.drop(columns=["sport"])
+    
+    # Make sure all required columns are present
+    for col in all_features:
+        if col not in user_df.columns:
+            user_df[col] = 0
+    
+    # Select only the features used by the model
+    user_df = user_df[all_features]
+    
+    # Get prediction probabilities
+    probabilities = model.predict_proba(user_df)[0]
+    classes = le.inverse_transform(np.arange(len(probabilities)))
+    return {cls: prob for cls, prob in zip(classes, probabilities)}
+
+# Example user input with sport
+user_input = {
+    "sport": "Volleyball",
+    "height_cm": 190,
+    "weight_kg": 82,
+    "genetic_injury_proneness": 6.5,
+    "daily_calories": 2800,
+    "protein_g": 180,
+    "carbs_g": 350,
+    "fat_g": 80,
+    "sleep_hours": 6.5,
+    "daily_steps": 15000,
+    "training_load": 8.5,
+    "RPE": 9
+}
+
+predicted_probabilities = predict_injury(user_input)
+print(f"\nPredicted Injury Type Probabilities for a {user_input['sport']} player:")
+# Sort probabilities for better readability
+for injury, prob in sorted(predicted_probabilities.items(), key=lambda x: x[1], reverse=True):
+    print(f"{injury}: {prob:.4f}")
